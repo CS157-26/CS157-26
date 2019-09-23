@@ -1,0 +1,13 @@
+Project Description
+Objective
+This project will be a three-tier architecture based database application. This project aims to develop a web application that facilitates communication in a workplace environment about any incidents that need attention.
+Executive Summary
+Incidents, or production incidents, are events that could lead to the disruption or complete loss of a service, function, or operation provided by an organization. In software, this can manifest as a software crash, a “down” or inactive server, or a broken feature after a recent patch.  Organizations are made aware of incidents through a variety of channels, including users reporting “bugs”, users contacting technical support, members of the development team discovering issues internally, or monitoring systems sending an alarm.
+
+This application seeks to consolidate these different channels of communication into one interface, where development teams can effectively keep track of incidents, prioritize them, and provide any affected parties with notifications all in a timely fashion.
+
+On top of management of these production incidents, the organization will also need to gather analytics on any production incidents that have occurred (such as what systems are usually affected, and what possible sources of these production incidents are) so they can correctly direct developers to resolve the source of these issues.
+Problem Statement
+The main motivation behind this project is how inelegant email communication can be when it comes to notifying and solving issues, especially urgent ones.  By creating a centralized application for all communication, it allows all information to be shared with the related parties quickly. By having people who are participating in the ticket record any steps they have attempted as well as the outcome, it creates a log of all communication for future reference if or when a similar incident occurs, which reduce resolution time.
+
+This application is geared towards mid-sized and large businesses where a more formal method of communication is required, especially as the number of potential people participating in a ticket grows. By keeping extensibility in mind, this application can quickly evolve and add new functionality as needed. Several possible out of scope functionalities could be paging the responsible team or teams if a ticket is filed with a high priority. Another example would be to hook into a web conferencing program, such as Zoom, to easily call all related parties quickly and easily.
