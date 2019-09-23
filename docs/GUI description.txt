@@ -2,8 +2,9 @@ The web application will require the following user interfaces to be created:
 ticket creation/edit modal
 ticket main view dashboard
 data analytics dashboard
-account management interface
 login window
+account management center
+
 
 Ticket Creation & Editing Modal
 
@@ -15,4 +16,12 @@ A dashboard interface must be created, in order to allow development team member
 
 Data Analytics Dashboard
 
-This intraface will allow the user to gain a high leve
+This intraface will allow the user to gain a high level view of production issues. The dashboard will consist of several buttons which, when pressed, open a modal with a corresponding graph. Each button represents some a query on the ticket database, and the drawn graph will render a graphical repsrentation of the returned results from this query. Examples of these queries include: how many tickets have each team had over time, what each team's average resolution time is, and how many tickets does each team currently have open.
+
+Login Window
+
+Since this application is targeted towards an enterprise environment, it is necessary that users are required to have accounts and login. As such, a login user interface will need to be created.
+
+Account Management Center(Possible)
+
+As mentioned above, users will need to have an account to use this web application. An account management will be created to allow an application admin to create accounts for employees, and remove accounts when necessary. Along with these features, the account management center will also allow the site admin to view a given user's usage log.
