@@ -1,0 +1,5 @@
+Feature Description:
+
+Create Ticket
+Creating a ticket is one of the core functions of the application, since the entire application revolves around the processing of tickets. To create a ticket, a user will open the create/edit ticket modal and fill out the necessary fields
+(Title, priority, protected flag, status, description, category, type, item) and press submit. Once submitted, the data will be sent to our web application, where it will be inserted into the ticket database. The time the ticket was submitted will automatically be recorded by the web application.

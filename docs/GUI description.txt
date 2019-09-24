@@ -7,7 +7,7 @@ Account Management Center
 
 
 Ticket Creation & Editing Modal
-This modal will be used by techsupport to create tickets. The interface will be a popup modal that will sit on top of the main view dashboard, and contain all necessary fields to create a ticket (issue priority, development team, issue name, ticket stage, and description). This modal will also be re-used for the purpose of editing existing tickets: such as changing the stage, or adding notes as the stage changes. As such, the modal will also be used by members of the development team who are tasked with resolving the production issue.
+This modal will be used by techsupport to create tickets. The interface will be a popup modal that will sit on top of the main view dashboard, and contain all necessary fields to create a ticket (Title, priority, protected flag, status, description, category, type, item). This modal will also be re-used for the purpose of editing existing tickets: such as changing the stage, or adding notes as the stage changes. As such, the modal will also be used by members of the development team who are tasked with resolving the production issue.
 
 Ticket Main View Dashboard
 A dashboard interface must be created, in order to allow development team members to view all existing tickets and select & edit them. The main dashboard will resemble an email inbox, except tickets will take the place of emails. A user may have several different ticket "inboxes", such as one for all tickets currently opened on their team and a separate one for the issues they are trying to solve. Within these interfaces, users should be able to sort and filter tickets, select them and add them to different "inboxes", and open them to edit the ticket (using the Modal described above).
