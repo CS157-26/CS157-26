@@ -1,0 +1,36 @@
+Security Measures
+Hashed Passwords
+In order to prevent unauthorized access to the application’s user accounts, all passwords will be hashed before being stored in the database. 
+Plaintext passwords will not be kept anywhere in the application for long periods of time and will be discarded upon being processed.
+
+Password Strength Requirements
+Passwords are required to have at least 5 lowercase letters, 1 uppercase letter, 1 special character, and 1 number.
+
+User Authentication
+Users will need to authenticate themselves by logging in using their credentials to access features reserved for their type of user.
+
+Input Sanitation
+All user input will be sanitized before being processed to ensure malicious code has not been entered. 
+This is to prevent SQL injection or any other similar attacks.
+
+Input Validation
+All user input will be checked for proper formatting. 
+This is to prevent invalid data in the backend database which could potentially break the application.
+
+Access Control Management
+HTTP and User Authorization
+When a user first registers an account with the application, an encrypted token containing identification of their account 
+as well as a unique signature from the application is created and given to the user’s browser. The token will be used to 
+verify sessions with the user. This is to prevent session hijacking or any other similar attacks that exploit user input. 
+The user’s email and their hashed password is then stored in the backend database.
+
+Creating and verifying this token is done using the JSON Web Token library detailed in the Software Environment section.
+
+Token Lifespan
+Whenever a user logs into their account or a new account is created, the application will generate a token using 
+the credentials entered by the user, a signature from the application, and an expiration time. 
+This token is stored in the user’s browser as a cookie and will be used to verify the user’s session every time the 
+user interacts with the application. If the user idles for a certain amount of time or loses their cookie, 
+their session can no longer be verified and they will be logged out from their account.
+
+Creating and verifying this token is done using the JSON Web Token library detailed in the Software Environment section.
