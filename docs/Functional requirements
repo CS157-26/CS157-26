@@ -1,3 +1,14 @@
 Functional Requirements
 Users:
 All users of this system must be registered before use. Only the original creator of a ticket as well as their associated team will have write access to the ticket itself. The default configuration for new tickets gives read and commenting rights to all users. An optional protected flag will only allow the assigned team(s) to access the ticket. Tickets and entries within the tickets will not be able to be deleted, only edited. The core audience of the application will be businesses with employees that need a communication channel with a history of previous communications that is easily sortable, searchable, and viewable for quick discovery. This application was designed with more technical oriented businesses in mind, especially those with a development team and/or a technical support team. The primary interface will be a web application that the intended audience will interact with. The main forms of interaction will be an overview of tickets as well as a detailed view of a specific ticket with the ability to add comments to the ticket.
+
+Functionality:
+Display Relevant Tickets
+* As a user, I want to see relevant tickets on the default view so that I can quickly see what may need to be prioritized.
+* This will query the database for active tickets that are associated with any CTIs assigned to the user's team and the default sort shall be by creation date
+Sort Current Tickets
+* As a user, I want to be able to sort tickets by its properties so that I can find and/or group relevant tickets
+* The current tickets will already be queried from the database, so the frontend will simply have to sort the data, stored as a dictionary, by the specified key.
+Filter Tickets
+* As a user, I want to be able to customize which tickets are shown so that I can quickly find a ticket(s)
+* Using a combination of dropdowns, checkboxes, and a textbox, the user can enter the type of ticket(s) they are looking for and the table should update with the specified ticket, if it exists. This will be accomplished by using the information from the filtering functionality to build a SQL query.
