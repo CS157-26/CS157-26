@@ -16,3 +16,9 @@ Update Ticket
 * As a user, I want to be able to add to an existing comment so that I can provide updates on the work being done on said ticket.
 * This involves a simple textbox form as well as an optional dropdown to change the status of the ticket if necessary from the user point of view.
 * In the backend, a new entry/comment is created and slaved to the ticket. This will also update the properties of the ticket such as last modified time, number of replies, and status (if changed).
+Create User
+* As a new user, I want to be able to create a new account so that I can view tickets
+* This will be a standard signup form to generate a new user and insert it into the user database. There will be a username field, password field, and a team dropdown with existing teams.
+Create Team
+* As a user, I want to be able to create a new team for instances where new teams are formed
+* This will be a basic form with a team name textbox as well as selectable CTIs to associate those CTIs with the new team.
