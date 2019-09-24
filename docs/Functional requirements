@@ -12,3 +12,7 @@ Sort Current Tickets
 Filter Tickets
 * As a user, I want to be able to customize which tickets are shown so that I can quickly find a ticket(s)
 * Using a combination of dropdowns, checkboxes, and a textbox, the user can enter the type of ticket(s) they are looking for and the table should update with the specified ticket, if it exists. This will be accomplished by using the information from the filtering functionality to build a SQL query.
+Update Ticket
+* As a user, I want to be able to add to an existing comment so that I can provide updates on the work being done on said ticket.
+* This involves a simple textbox form as well as an optional dropdown to change the status of the ticket if necessary from the user point of view.
+* In the backend, a new entry/comment is created and slaved to the ticket. This will also update the properties of the ticket such as last modified time, number of replies, and status (if changed).
