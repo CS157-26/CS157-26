@@ -1,0 +1,22 @@
+The web application UI will consist of the following:
+Ticket creation/editing modal
+Ticket main view dashboard
+Data analytics dashboard
+Login window
+Account Management Center
+
+
+Ticket Creation & Editing Modal
+This modal will be used by techsupport to create tickets. The interface will be a popup modal that will sit on top of the main view dashboard, and contain all necessary fields to create a ticket (Title, priority, protected flag, status, description, category, type, item). This modal will also be re-used for the purpose of editing existing tickets: such as changing the stage, or adding notes as the stage changes. As such, the modal will also be used by members of the development team who are tasked with resolving the production issue.
+
+Ticket Main View Dashboard
+A dashboard interface must be created, in order to allow development team members to view all existing tickets and select & edit them. The main dashboard will resemble an email inbox, except tickets will take the place of emails. A user may have several different ticket "inboxes", such as one for all tickets currently opened on their team and a separate one for the issues they are trying to solve. Within these interfaces, users should be able to sort and filter tickets, select them and add them to different "inboxes", and open them to edit the ticket (using the Modal described above).
+
+Data Analytics Dashboard
+This interface will allow the user to gain a high level view of production issues. The dashboard will consist of several buttons which, when pressed, open a modal with a corresponding graph. Each button represents a query on the ticket database, and the drawn graph will render a graphical representation of the returned results from this query. Examples of these queries include: how many tickets have each team had over time, what each team's average resolution time is, and how many tickets does each team currently have open.
+
+Login Window
+Since this application is targeted towards an enterprise environment, it is necessary that users are required to have accounts and login. As such, a login user interface will need to be created. This interface will allow the user to enter a username and password.
+
+Account Management Center(Possible)
+As mentioned above, users will need to have an account to use this web application. An account management will be created to allow an application admin to create accounts for employees, and remove accounts when necessary. Along with these features, the account management center will also allow the site admin to view a given user's usage log.

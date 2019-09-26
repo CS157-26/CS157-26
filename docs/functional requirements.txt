@@ -1,0 +1,11 @@
+Feature Description:
+
+Create Ticket
+Creating a ticket is one of the core functions of the application, since the entire application revolves around the processing of tickets. To create a ticket, a user will open the create/edit ticket modal and fill out the necessary fields
+(Title, priority, protected flag, status, description, category, type, item) and press submit. Once submitted, the data will be sent to our web application, where it will be inserted into the ticket database. The time the ticket was submitted will automatically be recorded by the web application.
+
+View Analytics
+A user will enter the data analytics center, where they will be presented with buttons corresponding to different analytical graphs (average resolution time for ticket, number of tickets per team, number of tickets over time). Each of these graphs is built using data retrieved from the database through specialized queries for the corresponding option. Relevant data for the graph is retrieved by the web application, and sent to the client so it may be rendered in their browser.
+
+Update Ticket
+Using the ticket dashboard, a user will be able to edit a ticket using the ticket edit modal (small variation of the ticket creation modal. When the user changes the status of ticket via the drop down in the edit modal, they will be prompted to enter any additional information (such as a justification for changing the status); this information is optional. Once the user is done editing the ticket, the edit information will be sent to the web application where the necessary database manipulations can be made to update the corresponding ticket record.

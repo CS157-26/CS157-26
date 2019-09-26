@@ -1,0 +1,43 @@
+Software Environment
+
+<Software Architecture Diagram>
+
+Cloud Platform Service:
+Heroku
+
+Server Operating System:
+Linux; Ubuntu distribution
+
+Presentation Layer Software
+ReactJS (JavaScript)
+React.js is a frontend library used to build interactive single-page UI for web applications. React breaks the UI into components which can be rendered or removed easily based on state and the data fetched from 
+the backend server. This functionality has made React well known for its ability to render components quickly based on rapidly changing data. React will be used to build the UI of this application.
+
+Redux (JavaScript)
+Redux is a state management library that is often used with single-page web applications that use  frontend libraries/frameworks such as React and Angular. State management is needed for single-page UIs to 
+keep track of the states of the application as a whole. Without state management tools like Redux, the web application would have to rely on a system where components pass vital information to each other just to 
+keep track of state which could lead to unnecessary data duplication or data loss if designed poorly. 
+
+Material UI (JSX)
+Google’s material UI frontend framework is designed to be used with React to create intuitive, uniform, and attractive UI. Material UI provides already made UI elements such as textboxes, buttons, modals, dropdown menus, etc.. 
+that are already uniformly styled after Google’s familiar UI styling. Using Material UI will allow the team to build a stylish UI without getting bogged down with too much HTML/CSS/JavaScript styling. 
+Material UI code is written in JSX, which is a language similar to HTML that also includes the ability to write JavaScript code.
+
+Business Layer Software
+NodeJS (JavaScript)
+Node.js is an open source server runtime environment for JavaScript. It uses Google Chrome’s v8 web engine to run JavaScript code outside of web browsers and allows developers to use JavaScript for server-side programming. 
+The team will use NodeJS as the runtime environment of our server because it is lightweight and easy to use. Also, its package manager, npm, gives the application access to a wide variety of libraries that 
+help simplify the overall coding task of the team. 
+
+ExpressJS (JavaScript)
+Express.js is among the major libraries that the application will make use of. It is a free and open-source server framework for Node.js. It is mainly used to build web applications and their APIs. 
+The team will use Express.js to set up our HTTP server as well as to build our APIs which will contain our application’s business logic. Our presentation layer will call these APIs to present 
+information from the database and/or display the functionalities that the application provides. 
+
+JSON Web Tokens (JavaScript)
+JSON Web Tokens is a JavaScript library that is used for HTTP authorization, user authorization, and user authentication. This library will be used to create encrypted tokens containing identification for each user. 
+The tokens will be stored in the database and will be used to verify HTTP requests, user logins, and user access to certain functionalities.
+
+Data Access Layer Software
+MySQL Database (Version 8, SQL)
+As required for the semester-long project, the application will use MySQL version 8 for our Relational Database Management System. Queries and posts made to the database will be done in the business layer.

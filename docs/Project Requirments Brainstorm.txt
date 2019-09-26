@@ -1,0 +1,13 @@
+use adobe xd for gui prototyping. for the gui description, we should
+prototype:
+	the ticket entry modal
+	main dashboard (filters on left, navigation/account info on top, main area ticket list)
+
+google cloud offers a free mysql database with 500mb avaialable of storage. this means
+that everyone in the group can share the same data, and pre load information for demos.
+
+The project description can be coppied from the proposal, and we will be expanding on the areas:
+System Environment
+Functional Issues
+Non-Functional Issues
+
