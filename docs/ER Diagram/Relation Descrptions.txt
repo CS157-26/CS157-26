@@ -1,6 +1,6 @@
-EntitySet Descriptions:
+# Entity Set Descriptions:
 
-Comments
+## Comments
 
 Comments is the entity set which contains all comments which will be present on on tickets. These comments are created on tickets by team members and other users to document the progress of the ticket, ask questions, and present any information pertinent to the ticket. As such, comment entities contain:
 
@@ -11,7 +11,7 @@ A parent ticket ID corresponding to the ticket entity the comment belongs on.
 A modification date.
 A creation date.
 
-Tickets
+## Tickets
 
 The Tickets entity set is at the core of our database application, as everything revolves around the creation and management of tickets. Tickets are created by users, edited over time, and generally contains all information about an on-going task. A given ticket entity contains:
 
@@ -24,8 +24,9 @@ A protected status flag which determines whether un-assigned users can access th
 A modification date.
 A creation date.
 A priority (low, medium, high) for sorting purposes.
+An Item ID corresponding to the item the ticket belongs to.
 
-Users
+## Users
 
 The Users entity set will contain User account information. Every individual who intends to use this database application will need a user account for security purposes. As such, a user entity will contain:
 
@@ -35,16 +36,39 @@ A Username that will be displayed to other users of the application.
 An account creation date.
 A password (hash) used by the user to login.
 
-Items
+## Items
+Items represents subcategories within each Type. Typically the item at fault or a requested action on the subcategory of the service.
 
-Types
+## Types
+Types represents subcategories within each category. Typically the kind of issue effecting the service.
 
-Teams
+## Categories
+Categories represents the main buckets that issues can fall under. Typically represents the affected service.
 
-Categorys
 
-Login Attempts
+## Teams
 
-Relationship Descriptions
+The Teams entity set holds information about the various Teams using this database application. Teams provide a way of organizing individuals in our application in a manner that mirrors their roles in the company using this application. As such, a Team entity application will contain:
+
+A unique ID.
+A Name.
+
+## Login Attempts
+
+Login Attempts is a table which keeps a history of all login attempts made by users. This is crucial for security purposes, as a site administrator will need a way to detect suspicious activity (such as a user logging in from a foreign IP despite the fact they are in the office. A Login Attempt Entity will contain:
+
+A unique ID.
+A timestamp of when the attempt was made.
+The IP address belonging to the user at the time of the Attempt.
+A user ID corresponding to the account the user was trying to login to.
+An is_successful flag representing whether the user was able to login.
+
+Relationship Descriptions:
 
 (Users) Member Of (Teams)
+
+The Member Of relation describes what Users belong to what teams. Since A given user can belong to multiple teams, and a given team can have multiple users in it, this relationship is many to many. There are no additional attributes in this relationship other than a user ID and the team it belongs to.
+
+(Users) assigned to (Tickets)
+
+The Assigned To relationship describes what users are assigned to resolve a ticket. Since a given user can be assigned to multiple tickets at once, and a given ticket can have multiple users working to resolve it at once, this is a many to many relationship. This relationship doesn't have any additional attributes other than a user ID corresponding to a user and a ticket ID corresponding to a ticket that user is assigned to.
