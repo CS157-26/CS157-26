@@ -1,10 +1,21 @@
-Relation Descriptions:
+EntitySet Descriptions:
 
 Comments
 
-Comments is the entity set which contains all comments which will be present on 
+Comments is the entity set which contains all comments which will be present on on tickets. These comments are created on tickets by team members and other users to document the progress of the ticket, ask questions, and present any information pertinent to the ticket. As such, comment entities contain:
+
+Text (content of the comment).
+Commenter id corresponding to the user that created the comment.
+A parent ticket ID corresponding to the ticket entity the comment belongs on.
+A modification date.
+A creation date.
 
 Tickets
+
+The Tickets entity set is at the core of our database application, as everything revolves around the creation and management of tickets. Tickets are created by users, edited over time, and generally contains all information about an on-going task. A given ticket entity contains:
+
+An owner ID corresponding to the user that created the ticket.
+An assignee ID corresponding to the user who has this ticket assigned to them
 
 Users
 
@@ -18,4 +29,6 @@ Categorys
 
 Login Attempts
 
-Member Of
+Relationship Descriptions
+
+(Users) Member Of (Teams)
