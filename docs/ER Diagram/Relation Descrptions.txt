@@ -1,0 +1,21 @@
+Relation Descriptions:
+
+Comments
+
+Comments is the entity set which contains all comments which will be present on 
+
+Tickets
+
+Users
+
+Items
+
+Types
+
+Teams
+
+Categorys
+
+Login Attempts
+
+Member Of
