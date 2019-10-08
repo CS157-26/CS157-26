@@ -4,6 +4,7 @@ Comments
 
 Comments is the entity set which contains all comments which will be present on on tickets. These comments are created on tickets by team members and other users to document the progress of the ticket, ask questions, and present any information pertinent to the ticket. As such, comment entities contain:
 
+A unique ID.
 Text (content of the comment).
 Commenter id corresponding to the user that created the comment.
 A parent ticket ID corresponding to the ticket entity the comment belongs on.
@@ -14,10 +15,25 @@ Tickets
 
 The Tickets entity set is at the core of our database application, as everything revolves around the creation and management of tickets. Tickets are created by users, edited over time, and generally contains all information about an on-going task. A given ticket entity contains:
 
+A unique ID.
 An owner ID corresponding to the user that created the ticket.
-An assignee ID corresponding to the user who has this ticket assigned to them
+Text (content of the ticket which provides any relevant information needed to describe the issue the ticket is trying to address).
+A Title for the ticket.
+The status of the ticket (Pending,  Assigned, Work in Progress, Resolved, Closed).
+A protected status flag which determines whether un-assigned users can access the ticket.
+A modification date.
+A creation date.
+A priority (low, medium, high) for sorting purposes.
 
 Users
+
+The Users entity set will contain User account information. Every individual who intends to use this database application will need a user account for security purposes. As such, a user entity will contain:
+
+A unique ID.
+An email address associated with that user.
+A Username that will be displayed to other users of the application.
+An account creation date.
+A password (hash) used by the user to login.
 
 Items
 
