@@ -25,6 +25,7 @@ CREATE TABLE teams(
 CREATE TABLE tickets(
 	ticket_id int,
     item_id int NOT NULL,
+    author_id int NOT NULL,
 	title varchar(128) NOT NULL,
 	content_text text,
 	current_status ENUM ('PENDING', 'ASSIGNED', 'WIP', 'RESOLVED', 'CLOSED') NOT NULL,
@@ -38,6 +39,7 @@ CREATE TABLE tickets(
 CREATE TABLE comments(
 	comment_id int,
     ticket_id int NOT NULL,
+    author_id int NOT NULL,
     content_text text,
     creation_date datetime NOT NULL,
     modification_date datetime,
@@ -52,8 +54,25 @@ CREATE TABLE categories(
 
 CREATE TABLE types(
 	type_id int,
+    category_id int NOT NULL,
+    team_id int NOT NULL,
     name varchar(64),
     PRIMARY KEY (type_id)
 );
 
+CREATE TABLE items(
+	item_id int,
+    type_id int NOT NULL,
+    name varchar(64),
+    PRIMARY KEY (item_id)
+);
 
+CREATE TABLE teamMembers(
+	user_id int NOT NULL,
+    team_id int NOT NULL
+);
+
+CREATE TABLE userAssignment(
+	user_id int NOT NULL,
+    ticket_id int NOT NULL
+);
