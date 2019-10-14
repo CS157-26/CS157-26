@@ -1,5 +1,5 @@
 # CS157A-26
-## **Production Incident Management - Team 26**
+## **Production Incident Ticket Management - Team 26**
 ### Members:
 * Zackary Finer
 * Antoine Ngu
