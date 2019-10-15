@@ -3,6 +3,7 @@ USE cs157a;
 CREATE TABLE users(
 	user_id int NOT NULL AUTO_INCREMENT,
     username varchar(64) NOT NULL,
+    password VARCHAR(128) NOT NULL,
     email varchar(64) NOT NULL,
     creation_date datetime NOT NULL,
     PRIMARY KEY (user_id)
@@ -29,10 +30,11 @@ CREATE TABLE tickets(
 	title varchar(128) NOT NULL,
 	content_text text,
 	current_status ENUM ('PENDING', 'ASSIGNED', 'WIP', 'RESOLVED', 'CLOSED') NOT NULL,
-	priority TINYINT CHECK (priority >= 1 AND priority <= 5) NOT NULL,
+	priority TINYINT NOT NULL,
     creation_date datetime NOT NULL,
     modification_date datetime,
     protected_status bool NOT NULL,
+    CHECK (priority >= 1 AND priority <= 5),
     PRIMARY KEY (ticket_id)
 );
 
