@@ -1,7 +1,7 @@
 USE cs157a;
 
 CREATE TABLE users(
-	user_id int,
+	user_id int NOT NULL AUTO_INCREMENT,
     username varchar(64) NOT NULL,
     email varchar(64) NOT NULL,
     creation_date datetime NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE users(
 );
 
 CREATE TABLE login_attempts(
-	attempt_id int,
+	attempt_id int NOT NULL AUTO_INCREMENT,
 	ip varchar(64) NOT NULL,
 	is_successful bool,
 	time_stamp datetime NOT NULL,
@@ -17,13 +17,13 @@ CREATE TABLE login_attempts(
 );
 
 CREATE TABLE teams(
-	team_id int,
+	team_id int NOT NULL AUTO_INCREMENT,
     name varchar(64) NOT NULL,
     PRIMARY KEY (team_id)
 );
 
 CREATE TABLE tickets(
-	ticket_id int,
+	ticket_id int NOT NULL AUTO_INCREMENT,
     item_id int NOT NULL,
     author_id int NOT NULL,
 	title varchar(128) NOT NULL,
@@ -37,7 +37,7 @@ CREATE TABLE tickets(
 );
 
 CREATE TABLE comments(
-	comment_id int,
+	comment_id int NOT NULL AUTO_INCREMENT,
     ticket_id int NOT NULL,
     author_id int NOT NULL,
     content_text text,
@@ -47,13 +47,13 @@ CREATE TABLE comments(
 );
 
 CREATE TABLE categories(
-	category_id int,
+	category_id int NOT NULL AUTO_INCREMENT,
     name varchar(64),
     PRIMARY KEY (category_id)
 );
 
 CREATE TABLE types(
-	type_id int,
+	type_id int NOT NULL AUTO_INCREMENT,
     category_id int NOT NULL,
     team_id int NOT NULL,
     name varchar(64),
@@ -61,7 +61,7 @@ CREATE TABLE types(
 );
 
 CREATE TABLE items(
-	item_id int,
+	item_id int NOT NULL AUTO_INCREMENT,
     type_id int NOT NULL,
     name varchar(64),
     PRIMARY KEY (item_id)
