@@ -38,7 +38,8 @@
 6. Work on your user story.
 
 ### Requesting review and merge:
-1. Once you are done and you have pushed your code to your branch, assign a reviewer to your pull request and let them know via slack that you've requested their review.
+1. Once you are done and have committed everything into your local branch, merge the development branch into your local branch and fix merge conflicts if any.
+2. Assign a reviewer to your pull request and let them know via slack that you've requested their review.
 2. Reviewer will review your code. If they approve, they will merge the code to 'development' branch. If they request changes, add those changes, push them, and request again. Repeat until approved.
 
-**NOTE:** In the event of the development branch being updated while you're still working on your user story, you need to merge the updated development branch into your branch and fix merge conflicts if any. This is to avoid merge conflicts when it's your user story's turn to be merged into the development branch.
+**NOTE:** In the event of the development branch being updated while you're still waiting for your pull request to be reviewed, you need to merge the updated development branch into your branch and fix merge conflicts if any.
