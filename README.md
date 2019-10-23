@@ -19,6 +19,9 @@
 * [Descriptions](https://docs.google.com/document/d/1wutAxAXTAQ6OScv0VVzGJzJALwWHV1B3L0BqK03Zn88/edit)
 * [Diagram](https://docs.google.com/document/d/1Mi5HKfvgGUl_YHR7PPKqtcaCecwbFPFk9v90KODSMEc/edit)
 
+## Project Backlog (Google Docs)
+* [Link](https://docs.google.com/spreadsheets/d/1icMi8aktAuDhtGX8v9kvJLWSf37Nn3Qcwnbd87Ys6gc/edit?usp=sharing)
+
 # How to run the application
 **NOTE:** You must have a MYSQL v.8 database server running with user: 'developer' and password: '123456' with database 'hw1' containing a table titled 'students' with String attributes 'first_name' 'last_name' 'major' 'year'. 
 
