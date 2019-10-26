@@ -6,8 +6,10 @@
 const express = require("express");
 const app = express();
 
-app.use("/api/demo", require("./routes/api/demo"));
+app.use(express.json()); // for json parsing
 
+app.use("/api/demo", require("./routes/api/demo"));
+app.use("/api/users", require("./routes/api/users"));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
