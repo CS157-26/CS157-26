@@ -5,9 +5,23 @@ const router = express.Router();
 const db = require("../../config/db");
 //db.connect();
 
-function verifyPassword()
+function verifyPassword(password)
 {
-    return true; //TODO: implement me
+    /*
+     * IMPORTANT NOTE:
+     * The regular expression shown below was developed using techniques described in the
+     * article "Use RegEx to Test Password Strength" written by Nic Raboy.
+     * URL: https://www.thepolyglotdeveloper.com/2015/05/use-regex-to-test-password-strength-in-javascript/
+     */
+
+    /*
+     * Paswords must have:
+     * At least 5 lowercase letters (?=(?:.*[a-z]){5,})
+     * At least 1 uppercase letter (?=.*[A-Z])
+     * At least 1 special character (?=.*[!@#$%^&*])
+     * At least 1 number (?=.*[0-9])
+     */    
+    return password.matches(/^(?=(?:.*[a-z]){5,})(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9])$/);
 }
 
 /**
