@@ -20,8 +20,9 @@ function verifyPassword(password)
      * At least 1 uppercase letter (?=.*[A-Z])
      * At least 1 special character (?=.*[!@#$%^&*])
      * At least 1 number (?=.*[0-9])
-     */    
-    return password.matches(/^(?=(?:.*[a-z]){5,})(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9])$/);
+     */
+    var ruleTest = new RegExp("^(?=(?:.*[a-z]){5,})(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9])");
+    return ruleTest.test(password);
 }
 
 /**
