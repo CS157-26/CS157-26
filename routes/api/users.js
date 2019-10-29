@@ -1,7 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
-
+const { check , validationResult } = require("express-validator");
 const db = require("../../config/db");
 //db.connect();
 
@@ -61,18 +61,28 @@ function addUserAccount(username, email, password, res)
 // @route   POST api/users
 // @desc    Register a new user
 // @access  Public
-router.post("/", (req, res) => {
-
-    /*We assume the body of the request is a json
-     *document*/
-    const { username, email, password } = req.body;
+router.post("/",
+    [
+        check('email').isEmail(),
+        check('password').exists(),
+        check('username').exists()
+    ],
+    (req, res) => {
+    var validationErr = validationResult(req);
+    
+    
     //Validate whether the user entered necessary information
-    if (!username || !email || !password)
+    if (!validationErr.isEmpty())
     {
         return res
             .status(400)
-            .json({msg:"Bad Request: A username, email, and password must be provided for registration."});
+            .json({msg:"Bad Request: A valid username, email, and password must be provided for registration."});
     }
+    /*
+     * We assume the body of the request is a json
+     * document
+     */
+    const { username, email, password } = req.body;
     //Next, check to ensure a user with the same email doesn't already exist
     db.query(
         "SELECT * FROM users WHERE lower(users.email) = lower('"+email+"') LIMIT 1;",
