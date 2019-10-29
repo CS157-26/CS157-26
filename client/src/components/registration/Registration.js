@@ -76,9 +76,7 @@ class Registration extends Component {
     };
 
     if (this.state.emailField.length > 0) {
-      const emailRegex = new RegExp(
-        "/^[^\\.](?!.*\\.\\.)[\\w\\.\\-\\+_]*[^\\.@]@[^\\.\\-\\_][\\w\\.\\-\\+_]+\\.(?!.*web)[\\w\\.\\-\\+_\\[\\]]{2,}$/"
-      );
+      const emailRegex = new RegExp("^[^s@]+@[^s@]+.[^s@]+$");
       if (emailRegex.test(this.state.emailField) === true) {
       } else {
         validationResults.emailField = "Please enter a valid email.";
