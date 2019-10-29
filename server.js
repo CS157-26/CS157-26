@@ -7,6 +7,7 @@ const express = require("express");
 const app = express();
 
 app.use(express.json()); // for json parsing
+app.use(express.urlencoded({extended: true})); // for x-www-form-urlencoded parsing
 
 app.use("/api/demo", require("./routes/api/demo"));
 app.use("/api/users", require("./routes/api/users"));
