@@ -9,22 +9,32 @@ const db = require("../../config/db");
 
 
 router.post('login', async (req, res) => {
+    // select from users table by email
     db.query('SELECT * FROM users WHERE email = ?', [res.body.email], (err, rows) => {
         if (err) {
-            res.status(500).json({msg: "Error: Could not verify account information."})
+            res.status(500).json({msg: "Server Error."})
         } else {
-            let user = rows[0];
+            const user = rows[0];
 
+            // check to see if a matching instance is found
             if (!user) {
-                return res.send({ErrorMessage: "email is not registered"});
+                return res.send({ErrorMessage: "Email is not registered"});
             }
 
-            let isMatch = await bcrypt.compare(req.body.password, user.password);
+            const isMatch = await bcrypt.compare(req.body.password, user.password);
             
+            // verify the password matches what's on record
             if (!isMatch) {
-                return res.send({ErrorMessage: "Password is Incorrect"});
+                return res.send({ErrorMessage: "Password is incorrect"});
             }
 
+            const token  = await jwt.sign({
+                _id: user.user_id,
+                username: user.username
+            }, SECRET_KEY);
+
+            // pass token back to be saved
+            res.status(200).send({token: token});
         }
     });
 });
