@@ -33,3 +33,4 @@ client/node_modules/
 
 # MySQL Database Key
 # config/key.js
+.eslintrc.js
