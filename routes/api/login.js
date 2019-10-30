@@ -8,7 +8,7 @@ const db = require("../../config/db");
 
 
 
-router.post('login', async (req, res) => {
+router.post('login', (req, res) => {
     // select from users table by email
     db.query('SELECT * FROM users WHERE email = ?', [res.body.email], (err, rows) => {
         if (err) {
@@ -21,14 +21,14 @@ router.post('login', async (req, res) => {
                 return res.send({ErrorMessage: "Email is not registered"});
             }
 
-            const isMatch = await bcrypt.compare(req.body.password, user.password);
+            const isMatch = bcrypt.compareSync(req.body.password, user.password);
             
             // verify the password matches what's on record
             if (!isMatch) {
                 return res.send({ErrorMessage: "Password is incorrect"});
             }
 
-            const token  = await jwt.sign({
+            const token  = jwt.sign({
                 _id: user.user_id,
                 username: user.username
             }, SECRET_KEY);
