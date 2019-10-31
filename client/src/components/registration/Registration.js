@@ -96,10 +96,10 @@ class Registration extends Component {
 
     if (this.state.passwordField.length > 0) {
       if (this.state.passwordField.length >= 8) {
-        const passRegex1 = new RegExp("[a-z]{5,}");
-        const passRegex2 = new RegExp("[A-Z]{1,}");
-        const passRegex3 = new RegExp("[0-9]{1,}");
-        const passRegex4 = new RegExp("^(.*)$");
+        const passRegex1 = new RegExp("[a-z]{5,}"); // Check if at least 5 lowercase letters
+        const passRegex2 = new RegExp("[A-Z]{1,}"); // Check if at least 1 uppercase letter
+        const passRegex3 = new RegExp("[0-9]{1,}"); // Check if at least 1 numerical character
+        const passRegex4 = new RegExp("^(.*)$"); // Check if one word
         if (
           passRegex1.test(this.state.passwordField) === true &&
           passRegex2.test(this.state.passwordField) === true &&
