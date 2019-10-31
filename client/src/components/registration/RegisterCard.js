@@ -31,12 +31,7 @@ const styles = theme => ({
     textDecoration: "none"
   },
   textField: {
-    [theme.breakpoints.up("sm")]: {
-      width: "13em"
-    },
-    [theme.breakpoints.only("xs")]: {
-      width: "10em"
-    }
+    width: "15em"
   }
 });
 
