@@ -13,6 +13,7 @@ import {
   withStyles
 } from "@material-ui/core";
 
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
 
@@ -28,6 +29,14 @@ const styles = theme => ({
   },
   link: {
     textDecoration: "none"
+  },
+  textField: {
+    [theme.breakpoints.up("sm")]: {
+      width: "13em"
+    },
+    [theme.breakpoints.only("xs")]: {
+      width: "10em"
+    }
   }
 });
 
@@ -70,7 +79,20 @@ function RegisterCard(props) {
           spacing={2}
         >
           <Grid item>
-            <Typography variant="h5">Create your PIM account:</Typography>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={2}
+            >
+              <Grid item>
+                <PersonAddIcon />
+              </Grid>
+              <Grid item>
+                <Typography variant="h5">Create your PIM account:</Typography>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item xs={12}>
             <Grid container direction="column" justify="center" spacing={1}>
@@ -85,6 +107,7 @@ function RegisterCard(props) {
                       : inputValidation.emailField
                   }
                   error={inputValidation.emailField.length === 0 ? false : true}
+                  className={classes.textField}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -100,6 +123,7 @@ function RegisterCard(props) {
                   error={
                     inputValidation.usernameField.length === 0 ? false : true
                   }
+                  className={classes.textField}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -120,6 +144,7 @@ function RegisterCard(props) {
                           ? false
                           : true
                       }
+                      className={classes.textField}
                     />
                   </Grid>
                   <Grid item>
@@ -149,6 +174,7 @@ function RegisterCard(props) {
                           ? false
                           : true
                       }
+                      className={classes.textField}
                     />
                   </Grid>
                   <Grid item>
@@ -197,7 +223,7 @@ function RegisterCard(props) {
           </Grid>
           <Grid item>
             <Typography variant="caption" className={classes.caption}>
-              ** At least 4 lowercase, 1 uppercase, 1 numeric, and 1 special
+              ** At least 5 lowercase, 1 uppercase, 1 numeric, and 1 special
               characters
             </Typography>
           </Grid>
