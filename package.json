@@ -12,6 +12,7 @@
     "client": "npm start --prefix client",
     "launch": "concurrently \"npm run server\" \"npm run client\""
   },
+  "proxy": "http://localhost:5000",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ZackFiner/CS157A-26.git"
