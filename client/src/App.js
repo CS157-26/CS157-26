@@ -1,61 +1,53 @@
-import React, { Component } from 'react';
-import axios from "axios";
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-import { Table, TableBody, TableCell, TableHead, TableRow, Paper } from "@material-ui/core";
+// Redux
+import { Provider } from "react-redux";
+import store from "./store";
+
+import { withStyles, Grid } from "@material-ui/core";
+
+import Landing from "./components/landing/Landing";
+import Registration from "./components/registration/Registration";
+
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
+
+const styles = {
+  root: {
+    flexGrow: 1
+  },
+  w100: {
+    width: "100%"
+  },
+  m0: {
+    margin: 0
+  },
+  border: {
+    border: "2px solid red"
+  }
+};
 
 class App extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      loaded: false
-    }
-
-    this.rows = [];
-  }
-
-  componentDidMount = () => {
-    if (this.state.loaded === false) {
-      axios.get("/api/demo/")
-        .then(rows => {
-          this.rows = rows.data;
-          this.setState({ loaded: true });
-        });
-    }
-  };
-
   render() {
-    if (this.state.loaded === true) {
-      let rowsMarkup = this.rows.map(row => {
-        return <TableRow>
-          <TableCell>{row.firstname}</TableCell>
-          <TableCell>{row.lastname}</TableCell>
-          <TableCell>{row.major}</TableCell>
-          <TableCell>{row.year}</TableCell>
-        </TableRow>
-      });
-
-      return (
-        <Paper>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>First Name</TableCell>
-                <TableCell>Last Name</TableCell>
-                <TableCell>Major</TableCell>
-                <TableCell>Year</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              { rowsMarkup }
-            </TableBody>
-          </Table>
-        </Paper>
-      );
-    } else {
-      return <div/>;
-    }
+    const { classes } = this.props;
+    return (
+      <Provider store={store}>
+        <Router className={classes.m0}>
+          <Navbar />
+          <Grid container direction="row">
+            <Grid item xs={12}>
+              <Switch>
+                <Route exact path="/" component={Landing} />
+                <Route exact path="/registration" component={Registration} />
+              </Switch>
+            </Grid>
+          </Grid>
+          <Footer />
+        </Router>
+      </Provider>
+    );
   }
 }
 
-export default App;
+export default withStyles(styles)(App);
