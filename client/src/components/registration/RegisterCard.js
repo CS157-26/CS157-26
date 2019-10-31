@@ -131,7 +131,7 @@ function RegisterCard(props) {
                   <Grid item>
                     <TextField
                       name="passwordField"
-                      label="Password *"
+                      label="Password **"
                       type={passwordVisible === false ? "password" : "string"}
                       onChange={handleChange}
                       helperText={
@@ -159,7 +159,7 @@ function RegisterCard(props) {
                   <Grid item>
                     <TextField
                       name="passwordVerifyField"
-                      label="Verify password **"
+                      label="Verify password *"
                       type={
                         passwordVerifyVisible === false ? "password" : "string"
                       }
