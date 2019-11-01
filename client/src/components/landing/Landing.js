@@ -1,11 +1,7 @@
 import React, { Component } from "react";
 
-import { Typography } from "@material-ui/core";
-
-class Landing extends Component {
+export default class Landing extends Component {
   render() {
-    return <Typography variant="h1">Landing</Typography>;
+    return <div></div>;
   }
 }
-
-export default Landing;
