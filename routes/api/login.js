@@ -19,7 +19,19 @@ router.post('/login', (req, res) => {
                 username: user.username,
                 id: user.id,
                 expires: Date.now() + (24 * 60 * 60 * 1000)
-            }
-        }
-    )
-})
+            };
+
+            req.login(payload, {session: false}, (error) => {
+                if (error) {
+                    res.status(400).send({ error });
+                }
+
+                const token = jwt.sign(JSON.stringify(payload), SECRET_KEY);
+
+                res.cookie('jwt', token, { httpOnly: false, secure: false });
+            });
+        },
+    )(req, res);
+});
+
+module.exports = router;
