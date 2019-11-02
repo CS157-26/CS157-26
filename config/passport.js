@@ -8,22 +8,19 @@ const SECRET_KEY = '321cba';
 
 const db = require("./db");
 
-passport.use(new LocalStrategy({
-    usernameField: 'email',
-    passwordField: 'password'
-}, (email, password, done) => {
-    db.query('SELECT * FROM users WHERE email = ?', email, (err, rows) => {
+passport.use(new LocalStrategy(
+    (username, password, done) => {
+    db.query('SELECT * FROM users WHERE email = ?', username, (err, rows) => {
         if (err) {
-           return done(err)
-        } else {
-            const userAccount = rows[0];
-            const passwordMatch  = bcrypt.compare(password, userAccount.password);
+            return done(err)
+        }
+        const userAccount = rows[0];
+        const passwordMatch  = bcrypt.compare(password, userAccount.password);
 
-            if (passwordMatch) {
-                return done(null, userAccount);
-            } else {
-                return done(null, false, 'Incorrect Username / Password');
-            }
+        if (passwordMatch) {
+            return done(null, userAccount);
+        } else {
+            return done(null, false, 'Incorrect Username / Password');
         }
     });
 }));
