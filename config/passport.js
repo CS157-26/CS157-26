@@ -4,9 +4,9 @@ const LocalStrategy = require('passport-local').Strategy;
 const passportJWT = require('passport-jwt');
 const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
-const SECRET_KEY = '321cba'
+const SECRET_KEY = '321cba';
 
-const db = require("../../config/db");
+const db = require("./db");
 
 passport.use(new LocalStrategy({
     usernameField: 'email',
