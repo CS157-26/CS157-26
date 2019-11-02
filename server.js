@@ -10,7 +10,7 @@ const passport = require('passport');
 app.use(express.json()); // for json parsing
 app.use(express.urlencoded({extended: true})); // for x-www-form-urlencoded parsing
 
-require('./routes/api/passport');
+require('./config/passport');
 app.use(passport.initialize());
 
 app.use("/api/demo", require("./routes/api/demo"));
