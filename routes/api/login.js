@@ -17,9 +17,10 @@ router.post('/', (req, res) => {
             });
             }
 
+            console.log(user);
             const payload = {
                 username: user.username,
-                id: user.id
+                id: user.user_id
             };
 
             req.login(payload, {session: false}, (error) => {
@@ -27,7 +28,7 @@ router.post('/', (req, res) => {
                     res.status(400).send({ error });
                 }
 
-                const token = jwt.sign(JSON.stringify(payload), SECRET_KEY, {expiresIn: '2 days'});
+                const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '2 days'});
                 res.json({token: token});
             });
         })(req, res);
