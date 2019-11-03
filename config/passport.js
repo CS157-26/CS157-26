@@ -26,11 +26,11 @@ passport.use(new LocalStrategy(
 }));
 
 passport.use(new JWTStrategy({
-    jwtFromRequest: ExtractJWT.fromUrlQueryParameter('secret_token'),
+    jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     secretOrKey: SECRET_KEY
-}, async (token, done) => {
+}, (payload, done) => {
     try {
-        return done(null, token.user)
+        return done(null, payload);
     } catch (error) {
         done(error);
     }

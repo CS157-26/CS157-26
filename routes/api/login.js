@@ -19,8 +19,7 @@ router.post('/', (req, res) => {
 
             const payload = {
                 username: user.username,
-                id: user.id,
-                expires: Date.now() + (24 * 60 * 60 * 1000)
+                id: user.id
             };
 
             req.login(payload, {session: false}, (error) => {
@@ -28,9 +27,8 @@ router.post('/', (req, res) => {
                     res.status(400).send({ error });
                 }
 
-                const token = jwt.sign(JSON.stringify(payload), SECRET_KEY);
-                res.cookie('jwt', token, { httpOnly: false, secure: false });
-                res.status(200).send({user: payload.username});
+                const token = jwt.sign(JSON.stringify(payload), SECRET_KEY, {expiresIn: '2 days'});
+                res.json({token: token});
             });
         })(req, res);
 });
