@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from "react-redux";
+import { loginUser } from "../../actions/loginActions";
 
 import LoginCard from "./LoginCard";
 
@@ -27,11 +29,16 @@ class Login extends Component {
     super();
     this.state = {
       emailField: "",
+      usernameField: "",
       passwordField: "",
+      passwordVerifyField: "",
       passwordVisible: false,
+      passwordVerifyVisible: false,
       inputValidation: {
         emailField: "",
+        usernameField: "",
         passwordField: "",
+        passwordVerifyField: ""
       }
     };
 
@@ -54,55 +61,45 @@ class Login extends Component {
         ...this.state,
         passwordVisible: !this.state.passwordVisible
       });
+    } else if (field === "passwordVerify") {
+      this.setState({
+        ...this.state,
+        passwordVerifyVisible: !this.state.passwordVerifyVisible
+      });
     }
   };
 
   validateInput = () => {
     let validationResults = {
       emailField: "",
-      passwordField: "",
+      passwordField: ""
     };
 
     if (this.state.emailField.length > 0) {
-      const emailRegex = new RegExp(
-        "/^[^\\.](?!.*\\.\\.)[\\w\\.\\-\\+_]*[^\\.@]@[^\\.\\-\\_][\\w\\.\\-\\+_]+\\.(?!.*web)[\\w\\.\\-\\+_\\[\\]]{2,}$/"
-      );
-      if (emailRegex.test(this.state.emailField) === true) {
-      } else {
-        validationResults.emailField = "Please enter a valid email.";
-      }
     } else {
       validationResults.emailField = "Please enter your email.";
     }
 
     if (this.state.passwordField.length > 0) {
-      if (this.state.passwordField.length >= 8) {
-        const passRegex1 = new RegExp("[a-z]{5,}");
-        const passRegex2 = new RegExp("[A-Z]{1,}");
-        const passRegex3 = new RegExp("[0-9]{1,}");
-        const passRegex4 = new RegExp("^(.*)$");
-        if (
-          passRegex1.test(this.state.passwordField) === true &&
-          passRegex2.test(this.state.passwordField) === true &&
-          passRegex3.test(this.state.passwordField) === true &&
-          passRegex4.test(this.state.passwordField) === true
-        ) {
-        } else {
-          validationResults.passwordField = "Passwords is too weak.";
-        }
-      } else {
-        validationResults.passwordField = "Password is too short.";
-      }
     } else {
       validationResults.passwordField = "Password field cannot be empty.";
+    }
+
+    if (
+      validationResults.emailField === "" &&
+      validationResults.passwordField === ""
+    ) {
+      const newUser = {
+        email: this.state.emailField,
+        password: this.state.passwordField
+      };
+      this.props.loginUser(newUser, this.props.history);
     }
 
     this.setState({
       ...this.state,
       inputValidation: validationResults
     });
-
-    // TODO: Call Backend for login
   };
 
   render() {
@@ -120,9 +117,7 @@ class Login extends Component {
           <LoginCard
             emailField={this.state.emailField}
             passwordField={this.state.passwordField}
-            passwordVisible={this.state.passwordVisible}
             inputValidation={this.state.inputValidation}
-            toggleVisibility={this.toggleVisibility}
             handleChange={this.handleChange}
             validateInput={this.validateInput}
           />
@@ -132,4 +127,11 @@ class Login extends Component {
   }
 }
 
-export default withStyles(styles)(Login);
+const mapStateToProps = state => ({
+  errors: state.errors
+});
+
+export default connect(
+  mapStateToProps,
+  { loginUser }
+)(withStyles(styles)(Login));
