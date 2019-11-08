@@ -9,7 +9,11 @@ const styles = theme => ({
     color: "#ecf0f1"
   },
   roboto: {
+<<<<<<< HEAD
     fontFamily: "Roboto Condensed, sans-serif"
+=======
+    fontFamily: "roboto, sans-serif"
+>>>>>>> Finished Navbar and Footer
   },
   noStyling: {
     textDecoration: "none"
