@@ -52,7 +52,7 @@ class App extends Component {
     const { classes } = this.props;
     return (
       <Provider store={store}>
-        <Router className={classes.m0}>
+        <Router>
           <Navbar />
           <Grid container direction="row">
             <Grid item xs={12}>
