@@ -9,7 +9,7 @@ const styles = theme => ({
     color: "#ecf0f1"
   },
   roboto: {
-    fontFamily: "roboto, sans-serif"
+    fontFamily: "Roboto Condensed, sans-serif"
   },
   noStyling: {
     textDecoration: "none"
@@ -36,7 +36,7 @@ class Navbar extends Component {
             <Grid item>
               <Link to="/" className={classes.noStyling}>
                 <Button>
-                  <Typography variant="h5" className={`${classes.btnClr} ${classes.abezee}`}>
+                  <Typography variant="h5" className={`${classes.btnClr} ${classes.roboto}`}>
                   &lt;Pim/&gt;
                   </Typography>
                 </Button>
