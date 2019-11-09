@@ -3,15 +3,16 @@ const router = express.Router();
 const { check , validationResult } = require("express-validator");
 const db = require("../../config/db");
 
+/*
 const passport = require("passport");
 const jwtStrategry  = require("./strategies/jwt");
 passport.use(jwtStrategry);
-
-function entityExists(table, id)
+*/
+async function entityExists(table, col, id)
 {
     var promise = new Promise((res)=>{
-        db.query(`SELECT * FROM ? WHERE user_id=?`,
-        [table, id],
+        db.query("SELECT * FROM "+table+" WHERE "+col+"=?",
+        [id],
         (err, rows, fields)=>{
             if (err) {
                 //rej("Query Failed")
@@ -24,8 +25,7 @@ function entityExists(table, id)
             }
         })
     });
-    var result = await promise;
-    return result;
+    return promise;
 }
 
 
@@ -34,7 +34,7 @@ function entityExists(table, id)
 // @desc    Returns a ticket
 // @access  Private
 router.get("/",
-    passport.authenticate('jwt', {session: false}),
+    //passport.authenticate('jwt', {session: false}),
     [
         check('ticket_id').exists()
     ],
@@ -76,7 +76,7 @@ router.get("/",
 // @desc    Returns a ticket
 // @access  Private
 router.post("/",
-    passport.authenticate('jwt', {session: false}),
+    //passport.authenticate('jwt', {session: false}),
     [
         check('item_id').exists(),
         check('author_id').exists(),
@@ -86,7 +86,7 @@ router.post("/",
         check('priority').exists(),
         check('protected_status').exists()
     ],
-    (req, res) => {
+    async (req, res) => {
         var validationError = validationResult(req);
         if (!validationError.isEmpty()) {
             return res
@@ -98,7 +98,9 @@ router.post("/",
         /*TODO: add extra validation for:
         author_id : make sure this matches the token provided for the request (the person making the request is the author)
         */
-        if (!entityExists("users", author_id) || !entityExists("items", item_id)) {
+       const validUser = await entityExists("users", "user_id", author_id);
+       const validItem = await entityExists("items", "item_id", item_id);
+        if (!validUser || !validItem) {
             return res
             .status(400)
             .json({msg:"Bad Request: The item or author provided is invalid."});
@@ -106,16 +108,17 @@ router.post("/",
 
         db.query(
        `INSERT INTO tickets (item_id, author_id, title, content_text, current_status, priority, creation_date, modification_date, protected_status)
-        VALUES (?, ?, "?", "?", "?", ?, CURRENT_TIME, CURRENT_TIME, ?)`,
+        VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIME, CURRENT_TIME, ?)`,
         [item_id, author_id, title, context_text, current_status, priority, protected_status],
         (err, rows, fields) => {
             if (err) {
                 res
                 .status(500)
-                .json({msg:"Error: There was an issue creating the ticket."});
+                .json({msg:"Error: There was an issue creating the ticket.", error:err});
             } else {
                 res
-                .status(200);
+                .status(200)
+                .send("success");
             }
         });
 });
