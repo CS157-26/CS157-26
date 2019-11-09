@@ -30,10 +30,11 @@ async function entityExists(table, col, id)
 
 
 
-// @route   GET api/tickets
+// @route   GET api/tickets/details
 // @desc    Returns a ticket
+// @param ticket_id - the id of the ticket with the details
 // @access  Private
-router.get("/",
+router.get("/details",
     //passport.authenticate('jwt', {session: false}),
     [
         check('ticket_id').exists()
@@ -49,14 +50,12 @@ router.get("/",
         const {ticket_id} = req.body;
 
         db.query(
-       `SELECT ticket.ticket_id, ticket.author_id, ticket.title,
-        ticket.current_status, ticket.priority, ticket.creation_date, ticket.modification_date,
-        ticket.protected_status, item.name AS "item_name", type.name AS "type_name",
+       `SELECT ticket.*, item.name AS "item_name", type.name AS "type_name",
         category.name AS "category_name"
         FROM tickets ticket
-        RIGHT JOIN items item ON item.item_id = ticket.item_id
-        RIGHT JOIN types type ON type.type_id = item.type_id
-        RIGHT JOIN categories category ON category.category_id = type.category_id
+        JOIN items item ON item.item_id = ticket.item_id
+        JOIN types type ON type.type_id = item.type_id
+        JOIN categories category ON category.category_id = type.category_id
         WHERE ticket.ticket_id = ?`, [ticket_id],
         (err, rows, fields) => {
             if (err) {
