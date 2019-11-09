@@ -69,12 +69,14 @@ CREATE TABLE items(
     PRIMARY KEY (item_id)
 );
 
-CREATE TABLE teamMembers(
+CREATE TABLE teammembers(
 	user_id int NOT NULL,
-    team_id int NOT NULL
+    team_id int NOT NULL,
+    PRIMARY KEY (user_id, team_id)
 );
 
-CREATE TABLE userAssignment(
+CREATE TABLE userassignment(
 	user_id int NOT NULL,
-    ticket_id int NOT NULL
+    ticket_id int NOT NULL,
+    PRIMARY KEY (user_id, ticket_id)
 );
