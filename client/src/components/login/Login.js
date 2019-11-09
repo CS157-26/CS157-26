@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/loginActions";
+import PropTypes from "prop-types";
 
 import LoginCard from "./LoginCard";
 
@@ -31,18 +32,12 @@ class Login extends Component {
       emailField: "",
       usernameField: "",
       passwordField: "",
-      passwordVerifyField: "",
-      passwordVisible: false,
-      passwordVerifyVisible: false,
       inputValidation: {
         emailField: "",
-        usernameField: "",
-        passwordField: "",
-        passwordVerifyField: ""
+        passwordField: ""
       }
     };
 
-    this.toggleVisibility = this.toggleVisibility.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.validateInput = this.validateInput.bind(this);
   }
@@ -55,19 +50,6 @@ class Login extends Component {
     });
   };
 
-  toggleVisibility = field => {
-    if (field === "password") {
-      this.setState({
-        ...this.state,
-        passwordVisible: !this.state.passwordVisible
-      });
-    } else if (field === "passwordVerify") {
-      this.setState({
-        ...this.state,
-        passwordVerifyVisible: !this.state.passwordVerifyVisible
-      });
-    }
-  };
 
   validateInput = () => {
     let validationResults = {
@@ -93,7 +75,7 @@ class Login extends Component {
         email: this.state.emailField,
         password: this.state.passwordField
       };
-      this.props.loginUser(newUser, this.props.history);
+      this.props.loginUser(newUser);
     }
 
     this.setState({
@@ -127,7 +109,13 @@ class Login extends Component {
   }
 }
 
+Login.propTypes = {
+  loginUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired
+};
+
 const mapStateToProps = state => ({
+  auth: state.auth,
   errors: state.errors
 });
 
