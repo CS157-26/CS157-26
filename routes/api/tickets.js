@@ -28,7 +28,63 @@ async function entityExists(table, col, id)
     return promise;
 }
 
+async function getTicketComments(ticket_id)
+{
+    return new Promise((res, rej) => {
+        db.query("SELECT * FROM comments WHERE ticket_id=?",
+        [ticket_id],
+        (err, rows, fields)=>
+        {
+            if (err) {
+                rej(err);
+            } else {
+                res(rows);
+            }
+        })
+    });
+}
 
+async function getTicketAssignees(ticket_id)
+{
+    return new Promise((res, rej) => {
+        db.query(
+       `SELECT username, user_id FROM users
+        JOIN userassignment USING (user_id)
+        WHERE ticket_id=?`,
+        [ticket_id],
+        (err, rows, fields)=>
+        {
+            if (err) {
+                rej(err);
+            } else {
+                res(rows);
+            }
+        })
+    });
+}
+
+async function buildDetailsDoc(ticketDetails, ticket_id, res)
+{
+    try {
+        const comments = await getTicketComments(ticket_id);
+        ticketDetails.comments = comments;
+    }
+    catch (rejection) {
+        ticketDetails.comments = [];
+        console.log(rejection);
+    }
+    try {
+        const users = await getTicketAssignees(ticket_id);
+        ticketDetails.assignees = users;
+    }
+    catch (rejection) {
+        ticketDetails.assignees = [];
+        console.log(rejection);
+    }
+    res
+    .status(200)
+    .json(ticketDetails);
+}
 
 // @route   GET api/tickets/details
 // @desc    Returns a ticket
@@ -65,10 +121,23 @@ router.get("/details",
                 {
                     res.status(404).json({msg:"Bad Request: The desired ticket could not be found."});
                 } else {
-                    res.status(200).json(rows[0]); // we send the only entry we recieved
+                    buildDetailsDoc(rows[0], ticket_id, res);
                 }
             }
         });
+});
+
+// @route   GET api/tickets/overview
+// @desc    Returns a list of ticket overview info
+// @param user_id
+// @param team_id
+// @access  Private
+router.get("/overview",
+    //passport.authenticate('jwt', {session: false}),
+    [],
+    async (req, res) =>{
+
+
 });
 
 // @route   POST api/tickets
