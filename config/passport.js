@@ -10,30 +10,40 @@ const db = require("./db");
 
 passport.use(new LocalStrategy(
     (username, password, done) => {
-    db.query('SELECT * FROM users WHERE email = ?', username, (err, rows) => {
-        if (err) {
-            return done(err)
-        }
-        const userAccount = rows[0];
-        const passwordMatch  = bcrypt.compare(password, userAccount.password);
+        db.query('SELECT * FROM users WHERE email = ?', username, (err, rows) => {
+            if (err) {
+                return done(err)
+            }
+            const userAccount = rows[0];
+            if (userAccount) {
+                const passwordMatch = bcrypt.compare(password, userAccount.password);
 
-        if (passwordMatch) {
-            return done(null, userAccount);
-        } else {
-            return done(null, false, 'Incorrect Username / Password');
-        }
-    });
-}));
+                if (passwordMatch) {
+                    return done(null, userAccount);
+                }
+            }
+            else {
+                return done(null, false, 'Incorrect Username / Password');
+            }
+        });
+    }));
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
     secretOrKey: SECRET_KEY
 }, (payload, done) => {
-    try {
-        return done(null, payload);
-    } catch (error) {
-        done(error);
-    }
+    db.query('SELECT * FROM users WHERE user_id = ?', payload.id, (err, rows) => {
+        if (err) {
+            return done(err, false);
+        }
+        const userAccount = rows[0];
+        if (userAccount) {
+            return done(null, userAccount);
+        }
+        else {
+            return done(null, false);
+        }
+    });
 }
 ));
 

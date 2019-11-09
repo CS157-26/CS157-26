@@ -8,28 +8,27 @@ const router = express.Router();
 router.post('/', (req, res) => {
     passport.authenticate(
         'local',
-        {session: false},
+        { session: false },
         (error, user) => {
             if (error || !user) {
                 return res.status(400).json({
                     message: 'something broke',
-                    user : user
-            });
+                    user: user
+                });
             }
 
-            console.log(user);
             const payload = {
                 username: user.username,
                 id: user.user_id
             };
 
-            req.login(payload, {session: false}, (error) => {
+            req.login(payload, { session: false }, (error) => {
                 if (error) {
                     res.status(400).send({ error });
                 }
 
-                const token = jwt.sign(payload, SECRET_KEY, {expiresIn: '2 days'});
-                res.json({token: token});
+                const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2 days' });
+                res.json({ success: true, token: "bearer " + token });
             });
         })(req, res);
 });
