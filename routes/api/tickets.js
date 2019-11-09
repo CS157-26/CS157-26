@@ -63,6 +63,34 @@ async function getTicketAssignees(ticket_id)
     });
 }
 
+function buildTicketFilter(user_id, team_id)
+{
+    var strA = [
+        `SELECT ticket.ticket_id, ticket.item_id, ticket.author_id, ticket.title, ticket.current_status,
+        ticket.priority, ticket.creation_date, ticket.modification_date, ticket.protected_status,
+        item.name AS item_name, type.name AS type_name, category.name AS category_name
+        FROM tickets ticket
+        JOIN items item ON item.item_id = ticket.item_id
+        JOIN types type ON type.type_id = item.type_id
+        JOIN categories category ON category.category_id = type.category_id`
+    ]
+    if (user_id != "" || team_id != "") {
+        strA[1] = " WHERE";
+        var i = 2;
+        if (user_id != "") {
+            strA[i] = " ticket.author_id = ";
+            strA[i+1] = user_id;
+            i = i + 2;
+        }
+        if (team_id != "") {
+            strA[i] = " AND";
+            strA[i+1] = " type.team_id = ";
+            strA[i+2] = team_id;
+        }
+    }
+    return strA.join("");
+}
+
 async function buildDetailsDoc(ticketDetails, ticket_id, res)
 {
     try {
@@ -134,10 +162,30 @@ router.get("/details",
 // @access  Private
 router.get("/overview",
     //passport.authenticate('jwt', {session: false}),
-    [],
+    [
+    ],
     async (req, res) =>{
+        var validationError = validationResult(req);
+        if (!validationError.isEmpty()) {
+            return res
+            .status(400)
+            .json({msg:"Bad Request: "});
+        }
+        const {user_id, team_id} = req.body;
 
-
+        db.query(
+            buildTicketFilter(user_id, team_id),
+            (err, rows, fields) => {
+                if (err) {
+                    res
+                    .status(500)
+                    .json({msg:"Error: There was an issue retreving the requested tickets", error:err});
+                } else {
+                    res
+                    .status(200)
+                    .json(rows);
+                }
+        });
 });
 
 // @route   POST api/tickets
