@@ -97,40 +97,8 @@ class Registration extends Component {
     }
 
     if (this.state.passwordField.length > 0) {
-      if (this.state.passwordField.length >= 8) {
-        const passRegex1 = new RegExp("[a-z]{5,}"); // Check if at least 5 lowercase letters
-        if (passRegex1.test(this.state.passwordField) === true) {
-          const passRegex2 = new RegExp("[A-Z]{1,}"); // Check if at least 1 uppercase letter
-          if (passRegex2.test(this.state.passwordField) === true) {
-            const passRegex3 = new RegExp("[0-9]{1,}"); // Check if at least 1 numerical character
-            if (passRegex3.test(this.state.passwordField) === true) {
-              const passRegex4 = new RegExp(
-                "([!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~])"
-              ); // Check if at least 1 special character
-              if (passRegex4.test(this.state.passwordField) === true) {
-                const passRegex5 = new RegExp("^(.*)$"); // Check if one word
-                if (passRegex5.test(this.state.passwordField) === true) {
-                } else {
-                  validationResults.passwordField = "Password must be 1 word.";
-                }
-              } else {
-                validationResults.passwordField =
-                  "At least 1 special char needed.";
-              }
-            } else {
-              validationResults.passwordField =
-                "At least 1 numerical char neded.";
-            }
-          } else {
-            validationResults.passwordField =
-              "At least 1 uppercase char needed.";
-          }
-        } else {
-          validationResults.passwordField =
-            "At least 5 lowercase chars needed.";
-        }
-      } else {
-        validationResults.passwordField = "Password is too short.";
+      if (new RegExp("^(?=(?:.*[a-z]){5,})(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*[0-9])").test(this.state.passwordField) === false) {
+        validationResults.passwordField = "Password does not meet requirements.";
       }
     } else {
       validationResults.passwordField = "Password field cannot be empty.";

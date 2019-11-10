@@ -1,41 +1,46 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const router = express.Router();
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = '321cba'
-
+const bcrypt = require('bcryptjs');
+const SECRET_KEY = '321cba';
 const db = require("../../config/db");
 
+const router = express.Router();
 
+router.post('/', (req, res) => {
+    const username = req.body.email;
+    const password = req.body.password;
 
-router.post('login', (req, res) => {
-    // select from users table by email
-    db.query('SELECT * FROM users WHERE email = ?', [res.body.email], (err, rows) => {
+    db.query('SELECT * FROM users WHERE email = ?', username, (err, rows) => {
         if (err) {
-            res.status(500).json({msg: "Server Error."})
-        } else {
-            const user = rows[0];
+            return res.status(400).json({ error: "server error"})
+        }
 
-            // check to see if a matching instance is found
-            if (!user) {
-                return res.send({ErrorMessage: "Email is not registered"});
+        const userAccount = rows[0];
+
+        if (userAccount) {
+            const passwordMatch = bcrypt.compare(password, userAccount.password);
+
+            if (passwordMatch) {
+                const payload = {
+                    id: userAccount.user_id,
+                    username: userAccount.username
+                };
+
+                req.login(payload, { session: false }, (error) => {
+                    if (error) {
+                        res.status(400).send({ error });
+                    }
+
+                    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2 days'});
+                    return res.json({ success: true, token: "bearer " + token });
+                })
             }
-
-            const isMatch = bcrypt.compareSync(req.body.password, user.password);
-            
-            // verify the password matches what's on record
-            if (!isMatch) {
-                return res.send({ErrorMessage: "Password is incorrect"});
-            }
-
-            const token  = jwt.sign({
-                _id: user.user_id,
-                username: user.username
-            }, SECRET_KEY);
-
-            // pass token back to be saved
-            res.status(200).send({token: token});
+            return res.status(400).json({ error: "server error"});
+        }
+        else {
+            return res.status(400).json({ error: "server error"});
         }
     });
 });
-    
+
+module.exports = router;

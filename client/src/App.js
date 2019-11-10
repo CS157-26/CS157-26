@@ -9,9 +9,28 @@ import { withStyles, Grid } from "@material-ui/core";
 
 import Landing from "./components/landing/Landing";
 import Registration from "./components/registration/Registration";
+import Login from "./components/login/Login";
+
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+
+import jwt_decode from "jwt-decode";
+import setAuthToken from "./utils/setAuthToken";
+import { setCurrentUser, logoutUser } from "./actions/loginActions";
+import PrivateRoute from "./components/PrivateRoute";
+
+if (localStorage.jwtToken) {
+  const token = localStorage.jwtToken;
+  setAuthToken(token);
+  const decoded = jwt_decode(token);
+  store.dispatch(setCurrentUser(decoded));
+  const currentTime = Date.now() / 1000;
+  if (decoded.exp < currentTime) {
+    store.dispatch(logoutUser());
+    window.location.href = "./login";
+  }
+}
 
 const styles = {
   root: {
@@ -40,6 +59,7 @@ class App extends Component {
               <Switch>
                 <Route exact path="/" component={Landing} />
                 <Route exact path="/registration" component={Registration} />
+                <Route exact path="/login" component={Login} />
               </Switch>
             </Grid>
           </Grid>
