@@ -88,6 +88,7 @@ function LoginCard(props) {
                     <TextField
                       name="passwordField"
                       label="Password"
+                      type="password"
                       onChange={handleChange}
                       helperText={
                         inputValidation.passwordField.length === 0
