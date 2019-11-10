@@ -15,6 +15,7 @@ passport.use(new LocalStrategy(
                 return done(err)
             }
             const userAccount = rows[0];
+            console.log(userAccount);
             if (userAccount) {
                 const passwordMatch = bcrypt.compare(password, userAccount.password);
 
