@@ -31,12 +31,7 @@ const styles = theme => ({
     textDecoration: "none"
   },
   textField: {
-    [theme.breakpoints.up("sm")]: {
-      width: "13em"
-    },
-    [theme.breakpoints.only("xs")]: {
-      width: "10em"
-    }
+    width: "15em"
   }
 });
 
@@ -131,7 +126,7 @@ function RegisterCard(props) {
                   <Grid item>
                     <TextField
                       name="passwordField"
-                      label="Password *"
+                      label="Password **"
                       type={passwordVisible === false ? "password" : "string"}
                       onChange={handleChange}
                       helperText={
@@ -159,7 +154,7 @@ function RegisterCard(props) {
                   <Grid item>
                     <TextField
                       name="passwordVerifyField"
-                      label="Verify password **"
+                      label="Verify password *"
                       type={
                         passwordVerifyVisible === false ? "password" : "string"
                       }

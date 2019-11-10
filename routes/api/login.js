@@ -1,41 +1,36 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const router = express.Router();
+const passport = require('passport');
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = '321cba'
+const SECRET_KEY = '321cba';
 
-const db = require("../../config/db");
+const router = express.Router();
 
-
-
-router.post('login', (req, res) => {
-    // select from users table by email
-    db.query('SELECT * FROM users WHERE email = ?', [res.body.email], (err, rows) => {
-        if (err) {
-            res.status(500).json({msg: "Server Error."})
-        } else {
-            const user = rows[0];
-
-            // check to see if a matching instance is found
-            if (!user) {
-                return res.send({ErrorMessage: "Email is not registered"});
+router.post('/', (req, res) => {
+    passport.authenticate(
+        'local',
+        { session: false },
+        (error, user) => {
+            if (error || !user) {
+                return res.status(400).json({
+                    message: 'something broke',
+                    user: user
+                });
             }
 
-            const isMatch = bcrypt.compareSync(req.body.password, user.password);
-            
-            // verify the password matches what's on record
-            if (!isMatch) {
-                return res.send({ErrorMessage: "Password is incorrect"});
-            }
+            const payload = {
+                username: user.username,
+                id: user.user_id
+            };
 
-            const token  = jwt.sign({
-                _id: user.user_id,
-                username: user.username
-            }, SECRET_KEY);
+            req.login(payload, { session: false }, (error) => {
+                if (error) {
+                    res.status(400).send({ error });
+                }
 
-            // pass token back to be saved
-            res.status(200).send({token: token});
-        }
-    });
+                const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2 days' });
+                res.json({ success: true, token: "bearer " + token });
+            });
+        })(req, res);
 });
-    
+
+module.exports = router;
