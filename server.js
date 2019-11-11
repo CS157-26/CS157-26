@@ -8,7 +8,7 @@ const app = express();
 const passport = require('passport');
 
 app.use(express.json()); // for json parsing
-app.use(express.urlencoded({extended: true})); // for x-www-form-urlencoded parsing
+app.use(express.urlencoded({ extended: true })); // for x-www-form-urlencoded parsing
 
 require('./config/passport');
 app.use(passport.initialize());
@@ -17,6 +17,7 @@ app.use("/api/demo", require("./routes/api/demo"));
 app.use("/api/users", require("./routes/api/users"));
 app.use("/api/tickets", require("./routes/api/tickets"));
 app.use("/api/login", require("./routes/api/login"));
+app.use("/api/attempts", require("./routes/api/attempts"));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server started on port: ${PORT}`);
