@@ -8,13 +8,11 @@ import {
   Grid,
   TextField,
   Typography,
-  IconButton,
   Button,
   withStyles
 } from "@material-ui/core";
 
-import VisibilityIcon from "@material-ui/icons/Visibility";
-import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
+import PersonAddIcon from "@material-ui/icons/PersonAdd";
 
 const styles = theme => ({
   border: {
@@ -28,30 +26,19 @@ const styles = theme => ({
   },
   link: {
     textDecoration: "none"
+  },
+  textField: {
+    width: "15em"
   }
 });
 
-function RegisterCard(props) {
+function LoginCard(props) {
   const {
-    passwordVisible,
     inputValidation,
     handleChange,
     validateInput,
     classes
   } = props;
-
-  const toggleIcon = visibility => {
-    if (visibility === true) {
-      return <VisibilityIcon />;
-    } else {
-      return <VisibilityOffIcon />;
-    }
-  };
-
-  const handlePasswordVisibility = e => {
-    e.preventDefault();
-    props.toggleVisibility("password");
-  };
 
   return (
     <Card className={classes.cardWidth}>
@@ -64,14 +51,27 @@ function RegisterCard(props) {
           spacing={2}
         >
           <Grid item>
-            <Typography variant="h5">Account login:</Typography>
+            <Grid
+              container
+              direction="row"
+              justify="center"
+              alignItems="center"
+              spacing={2}
+            >
+              <Grid item>
+                <PersonAddIcon />
+              </Grid>
+              <Grid item>
+                <Typography variant="h5">Log into your account:</Typography>
+              </Grid>
+            </Grid>
           </Grid>
           <Grid item xs={12}>
             <Grid container direction="column" justify="center" spacing={1}>
               <Grid item xs={12}>
                 <TextField
                   name="emailField"
-                  label="Email *"
+                  label="Email"
                   onChange={handleChange}
                   helperText={
                     inputValidation.emailField.length === 0
@@ -79,6 +79,7 @@ function RegisterCard(props) {
                       : inputValidation.emailField
                   }
                   error={inputValidation.emailField.length === 0 ? false : true}
+                  className={classes.textField}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -86,8 +87,8 @@ function RegisterCard(props) {
                   <Grid item>
                     <TextField
                       name="passwordField"
-                      label="Password *"
-                      type={passwordVisible === false ? "password" : "string"}
+                      label="Password"
+                      type="password"
                       onChange={handleChange}
                       helperText={
                         inputValidation.passwordField.length === 0
@@ -99,15 +100,12 @@ function RegisterCard(props) {
                           ? false
                           : true
                       }
+                      className={classes.textField}
                     />
-                  </Grid>
-                  <Grid item>
-                    <IconButton size="small" onClick={handlePasswordVisibility}>
-                      {toggleIcon(passwordVisible)}
-                    </IconButton>
                   </Grid>
                 </Grid>
               </Grid>
+            </Grid>
           </Grid>
           <Grid item className={classes.m2}>
             <Grid
@@ -117,9 +115,6 @@ function RegisterCard(props) {
               alignItems="center"
               spacing={2}
             >
-              <Grid item>
-                <Button className={classes.backButton}>BACK</Button>
-              </Grid>
               <Grid item>
                 <Button
                   variant="contained"
@@ -136,7 +131,7 @@ function RegisterCard(props) {
               Don't have an account?{" "}
               <span>
                 <Link to="/registration" className={classes.link}>
-                  Create an Account
+                  Sign in
                 </Link>
               </span>
             </Typography>
@@ -147,13 +142,11 @@ function RegisterCard(props) {
   );
 }
 
-RegisterCard.propTypes = {
+LoginCard.propTypes = {
   emailField: PropTypes.string,
   passwordField: PropTypes.string,
-  passwordVisible: PropTypes.bool,
-  toggleVisibility: PropTypes.func,
   handleChange: PropTypes.func,
   validateInput: PropTypes.func
 };
 
-export default withStyles(styles)(RegisterCard);
+export default withStyles(styles)(LoginCard);
