@@ -60,9 +60,12 @@ class Landing extends Component {
             </Grid>
           </Grid>
         </Grid>
+        <Grid item className={classes.w100}>
+          <hr className={classes.w100}/>
+        </Grid>
         <Grid item>
           <Grid container direction="row" justify="center" alignItems="center" spacing={10}>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <Card>
                 <CardContent>
                   <Grid container direction="column" justify="center" alignItems="center" spacing={2}>
@@ -84,7 +87,7 @@ class Landing extends Component {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <Card>
                 <CardContent>
                   <Grid container direction="column" justify="center" alignItems="center" spacing={2}>
@@ -105,7 +108,7 @@ class Landing extends Component {
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={4}>
               <Card>
                 <CardContent>
                   <Grid container direction="column" justify="center" alignItems="center" spacing={2}>
