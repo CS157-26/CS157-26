@@ -87,11 +87,7 @@ class Landing extends Component {
                 </CardContent>
               </Card>
             </Grid>
-<<<<<<< HEAD
             <Grid item xs={12} md={4}>
-=======
-            <Grid item xs={12} md={3}>
->>>>>>> Began rough draft of landing page
               <Card>
                 <CardContent>
                   <Grid container direction="column" justify="center" alignItems="center" spacing={2}>
@@ -112,11 +108,7 @@ class Landing extends Component {
                 </CardContent>
               </Card>
             </Grid>
-<<<<<<< HEAD
             <Grid item xs={12} md={4}>
-=======
-            <Grid item xs={12} md={3}>
->>>>>>> Began rough draft of landing page
               <Card>
                 <CardContent>
                   <Grid container direction="column" justify="center" alignItems="center" spacing={2}>
