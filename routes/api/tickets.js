@@ -112,21 +112,25 @@ async function getTicketAssignees(ticket_id)
 function buildTicketFilter(user_id, team_id)
 {
     var strA = [
-        `SELECT ticket.ticket_id, ticket.item_id, ticket.author_id, ticket.title, ticket.current_status,
+        `SELECT DISTINCT ticket.ticket_id, ticket.item_id, ticket.author_id, ticket.title, ticket.current_status,
         ticket.priority, ticket.creation_date, ticket.modification_date, ticket.protected_status,
         item.name AS item_name, type.name AS type_name, category.name AS category_name
         FROM tickets ticket
         JOIN items item ON item.item_id = ticket.item_id
         JOIN types type ON type.type_id = item.type_id
-        JOIN categories category ON category.category_id = type.category_id`
+        JOIN categories category ON category.category_id = type.category_id
+        JOIN userassignment assignees ON assignees.ticket_id = ticket.ticket_id`
     ]
     if ((user_id && user_id != "") || (team_id && team_id != "")) {
         strA[1] = " WHERE";
         var i = 2;
         if (user_id && user_id != "") {
-            strA[i] = " ticket.author_id = ";
+            strA[i] = " assignees.user_id = ";
             strA[i+1] = user_id;
-            i = i + 2;
+            strA[i+2] = " OR ";
+            strA[i+3] = " ticket.author_id = ";
+            strA[i+4] = user_id;
+            i = i + 5;
         }
         if (team_id && team_id != "") {
             strA[i] = " AND";
