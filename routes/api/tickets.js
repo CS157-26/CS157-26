@@ -8,6 +8,18 @@ const passport = require("passport");
 const jwtStrategry  = require("./strategies/jwt");
 passport.use(jwtStrategry);
 */
+
+/**
+ * Performs a query to determine whether a particular object exists
+ * within a given table. The column to select must be specified.
+ * 
+ * This function is asynchrounus and returns a promise.
+ * @param {string} table The table to be searched.
+ * @param {string} col The name of the column/attribute constituting the entity id.
+ * @param {string} id The entity id to be searched for.
+ * 
+ * @returns {Promise<boolean>} Promise which when resolved indicates whether any such entity was located.
+ */
 async function entityExists(table, col, id)
 {
     var promise = new Promise((res)=>{
@@ -28,6 +40,14 @@ async function entityExists(table, col, id)
     return promise;
 }
 
+/**
+ * Performs a database query to find all comments associated with a given ticket,
+ * specified by a ticket id.
+ * 
+ * This function is asynchronus and returns a promise.
+ * @param {string} ticket_id The id of the ticket associated with the comments.
+ * @return {Promise} A promise which either contains row data retrieved, or an error.
+ */
 async function getTicketComments(ticket_id)
 {
     return new Promise((res, rej) => {
@@ -44,6 +64,15 @@ async function getTicketComments(ticket_id)
     });
 }
 
+/**
+ * Retrieves a list of all users associated with a given ticket. Specifically,
+ * it retrieves there username and user_id (user_id incase more information
+ * is needed by the front end).
+ * 
+ * This function is asynchronus and returns a promise.
+ * @param {string} ticket_id The id of the ticket associated with the assignees.
+ * @return {Promise} A promise which contains either row data retrieved, or an error.
+ */
 async function getTicketAssignees(ticket_id)
 {
     return new Promise((res, rej) => {
@@ -63,6 +92,23 @@ async function getTicketAssignees(ticket_id)
     });
 }
 
+/**
+ * Constructs an sql query which can be used to select a set of tickets
+ * (specifically overview information on tickets, so no context_text)
+ * for a given user or team. The parameters to this function can be null.
+ * 
+ * This function generates queries as follows:
+ * 1. If neither user_id or team_id is specified, all tickets in the database
+ *    will be returned.
+ * 2. If user_id is specified, all tickets associated with a user will be returned.
+ * 3. If team_id is specified, all tickets associated with a team will be returned.
+ * 4. If both user_id and team_id are specified, all tickets associated with that
+ *    user and team will be returned.
+ * 
+ * @param {string} user_id Id of the user associated with the tickets. 
+ * @param {string} team_id Id of the team associated with the tickets.
+ * @return {string} A string containing the query generated.
+ */
 function buildTicketFilter(user_id, team_id)
 {
     var strA = [
@@ -74,15 +120,15 @@ function buildTicketFilter(user_id, team_id)
         JOIN types type ON type.type_id = item.type_id
         JOIN categories category ON category.category_id = type.category_id`
     ]
-    if (user_id != "" || team_id != "") {
+    if ((user_id && user_id != "") || (team_id && team_id != "")) {
         strA[1] = " WHERE";
         var i = 2;
-        if (user_id != "") {
+        if (user_id && user_id != "") {
             strA[i] = " ticket.author_id = ";
             strA[i+1] = user_id;
             i = i + 2;
         }
-        if (team_id != "") {
+        if (team_id && team_id != "") {
             strA[i] = " AND";
             strA[i+1] = " type.team_id = ";
             strA[i+2] = team_id;
@@ -91,6 +137,19 @@ function buildTicketFilter(user_id, team_id)
     return strA.join("");
 }
 
+/**
+ * Generates a json document which contains a detailed description of a ticket
+ * including it's context_text, sorting information, assignees, and comments.
+ * 
+ * The caller must first retrieve base ticket information (everything in the tickets
+ * table plus sorting information), this function then composes ticket info from other
+ * fields into said json doc, and returns nothing, as the third paramater (res) is the
+ * result of a request.
+ * 
+ * @param {JSON} ticketDetails Contains base information about a ticket (retrieved by the caller).
+ * @param {string} ticket_id Id of the ticket to retrieve data for.
+ * @param {*} res The result of the calling request handler.
+ */
 async function buildDetailsDoc(ticketDetails, ticket_id, res)
 {
     try {
@@ -157,8 +216,8 @@ router.get("/details",
 
 // @route   GET api/tickets/overview
 // @desc    Returns a list of ticket overview info
-// @param user_id
-// @param team_id
+// @param user_id - Specifies the user we want to retrieve tickets for
+// @param team_id - Specifies the team we want to retrieve tickets for
 // @access  Private
 router.get("/overview",
     //passport.authenticate('jwt', {session: false}),
