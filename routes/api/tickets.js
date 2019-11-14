@@ -94,7 +94,7 @@ async function getTicketAssignees(ticket_id)
 
 /**
  * Constructs an sql query which can be used to select a set of tickets
- * (specifically overview information on tickets, so no context_text)
+ * (specifically overview information on tickets, so no content_text)
  * for a given user or team. The parameters to this function can be null.
  * 
  * This function generates queries as follows:
@@ -146,7 +146,7 @@ function buildTicketFilter(user_id, team_id)
 
 /**
  * Generates a json document which contains a detailed description of a ticket
- * including it's context_text, sorting information, assignees, and comments.
+ * including it's content_text, sorting information, assignees, and comments.
  * 
  * The caller must first retrieve base ticket information (everything in the tickets
  * table plus sorting information), this function then composes ticket info from other
