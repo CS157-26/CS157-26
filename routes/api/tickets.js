@@ -263,7 +263,7 @@ router.post("/",
         check('item_id').exists(),
         check('author_id').exists(),
         check('title').exists(),
-        check('context_text').exists(),
+        check('content_text').exists(),
         check('current_status').exists(),
         check('priority').exists(),
         check('protected_status').exists()
@@ -276,7 +276,7 @@ router.post("/",
             .json({msg:"Bad Request: Fields were missing from the ticket creation request."});
         }
 
-        const {item_id, author_id, title, context_text, current_status, priority, protected_status} = req.body;
+        const {item_id, author_id, title, content_text, current_status, priority, protected_status} = req.body;
         /*TODO: add extra validation for:
         author_id : make sure this matches the token provided for the request (the person making the request is the author)
         */
@@ -291,7 +291,7 @@ router.post("/",
         db.query(
        `INSERT INTO tickets (item_id, author_id, title, content_text, current_status, priority, creation_date, modification_date, protected_status)
         VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIME, CURRENT_TIME, ?)`,
-        [item_id, author_id, title, context_text, current_status, priority, protected_status],
+        [item_id, author_id, title, content_text, current_status, priority, protected_status],
         (err, rows, fields) => {
             if (err) {
                 res
