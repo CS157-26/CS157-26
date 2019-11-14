@@ -131,11 +131,14 @@ function buildTicketFilter(user_id, team_id)
             strA[i+3] = " ticket.author_id = ";
             strA[i+4] = user_id;
             i = i + 5;
+            if (team_id && team_id != "") {
+                strA[i] = " AND";
+                i = i + 1;
+            }
         }
         if (team_id && team_id != "") {
-            strA[i] = " AND";
-            strA[i+1] = " type.team_id = ";
-            strA[i+2] = team_id;
+            strA[i+2] = " type.team_id = ";
+            strA[i+1] = team_id;
         }
     }
     return strA.join("");
