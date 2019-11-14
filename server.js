@@ -15,6 +15,7 @@ app.use(passport.initialize());
 
 app.use("/api/demo", require("./routes/api/demo"));
 app.use("/api/users", require("./routes/api/users"));
+app.use("/api/tickets", require("./routes/api/tickets"));
 app.use("/api/login", require("./routes/api/login"));
 app.use("/api/attempts", require("./routes/api/attempts"));
 const PORT = process.env.PORT || 5000;
