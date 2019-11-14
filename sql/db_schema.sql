@@ -11,6 +11,7 @@ CREATE TABLE users(
 
 CREATE TABLE login_attempts(
 	attempt_id int NOT NULL AUTO_INCREMENT,
+    user_id int NOT NULL,
 	ip varchar(64) NOT NULL,
 	is_successful bool,
 	time_stamp datetime NOT NULL,
