@@ -100,4 +100,24 @@ router.post("/",
     })
 });
 
+// @route   GET api/users/teams
+// @desc    Get the names of the teams a user is in.
+// @params  user_id: The user_id of the user
+// @access  Public
+router.get("/teams", async (req, res) => {
+    const { user_id } = req.body;
+    if (user_id) {
+        const query = `SELECT name FROM teammembers, teams WHERE user_id=${user_id} AND teammembers.team_id = teams.team_id`;
+        db.query(query, (err, rows, field) => {
+            if (err) {
+                res.status(500).send({ msg: "Query Error: There was an error in the database query."});
+            } else {
+                res.status(200).send(rows);
+            }
+        })
+    } else {
+        res.status(500).send({ msg: "Bad Request: A user id is required."});
+    }
+});
+
 module.exports = router;
