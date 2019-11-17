@@ -11,6 +11,8 @@ import Landing from "./components/landing/Landing";
 import Registration from "./components/registration/Registration";
 import Login from "./components/login/Login";
 
+import TeamCreation from "./components/teams/TeamCreation";
+
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
@@ -60,6 +62,7 @@ class App extends Component {
                 <Route exact path="/" component={Landing} />
                 <Route exact path="/registration" component={Registration} />
                 <Route exact path="/login" component={Login} />
+                <PrivateRoute exact path="/teamcreation" component={TeamCreation} />>
               </Switch>
             </Grid>
           </Grid>
