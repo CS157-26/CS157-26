@@ -1,6 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
 
 import {
     Card,
@@ -8,7 +6,6 @@ import {
     Grid,
     TextField,
     Typography,
-    IconButton,
     Button,
     withStyles
 } from "@material-ui/core";
@@ -33,8 +30,6 @@ const styles = theme => ({
 
 function NewTeamCard(props) {
     const {
-        teamnameField,
-        assignedTypes,
         handleChange,
         inputValidation,
         validateInput,

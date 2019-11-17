@@ -95,7 +95,7 @@ class TeamCreation extends Component {
                         teamnameField={this.state.teamnameField}
                         assignedTypes={this.state.assignedTypes}
                         handleChange={this.handleChange}
-                        inputValidation={this.inputValidation}
+                        inputValidation={this.state.inputValidation}
                         validateInput={this.validateInput}
                     />
                 </Grid>
