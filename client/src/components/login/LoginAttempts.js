@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-
+import { connect } from "react-redux";
 import LoginAttemptCard from "./LoginAttemptCard";
 
 import { withStyles, Grid } from "@material-ui/core";
-import CancelIcon from '@material-ui/icons/Cancel';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import Axios from "axios";
 
 const styles = theme => ({
     pageSpacing: {
@@ -24,30 +23,28 @@ const styles = theme => ({
     }
 });
 
-// fake data until 010 is merged in
-function createData(ip, wassuccess, timestamp) {
-    if (wassuccess) {
-        wassuccess = <CheckCircleIcon color="primary"/>;
-    } else {
-        wassuccess = <CancelIcon color="secondary"/>;
-    }
-    return { ip, wassuccess, timestamp };
-}
-
-const fakerows = [
-    createData('Frozen yoghurt', 1, 6.0),
-    createData('Ice cream sandwich', 0, 9.0),
-    createData('Eclair', 1, 16.0),
-    createData('Cupcake', 0, 3.7),
-    createData('Gingerbread', 1, 16.1),
-];
-
 class LoginAttempts extends Component {
     constructor() {
         super();
         this.state = {
-            rows: {}
+            rows: []
         };
+    }
+
+    componentDidMount() {
+        Axios.get('/api/attempts', {
+            params: {
+                user: this.props.auth.user.id
+            }
+        })
+            .then(res => {
+                this.setState({
+                    rows: res.data
+                })
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }
 
     render() {
@@ -63,7 +60,7 @@ class LoginAttempts extends Component {
             >
                 <Grid item className={classes.cardSize}>
                     <LoginAttemptCard
-                        rows={fakerows}
+                        rows={this.state.rows}
                     />
                 </Grid>
             </Grid>
@@ -71,4 +68,9 @@ class LoginAttempts extends Component {
     }
 }
 
-export default withStyles(styles)(LoginAttempts);
+const mapStateToProps = state => ({
+    auth: state.auth,
+    errors: state.errors
+});
+
+export default connect(mapStateToProps)(withStyles(styles)(LoginAttempts));

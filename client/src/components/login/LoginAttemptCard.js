@@ -4,6 +4,8 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import CancelIcon from '@material-ui/icons/Cancel';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 
 
 import {
@@ -49,12 +51,12 @@ function LoginAttemptCard(props) {
                     </TableHead>
                     <TableBody>
                         {rows.map(row => (
-                            <TableRow key={row.timestamp}>
+                            <TableRow key={row.attempt_id}>
                                 <TableCell component="th" scope="row">
                                     {row.ip}
                                 </TableCell>
-                                <TableCell align="right">{row.wassuccess}</TableCell>
-                                <TableCell align="right">{row.timestamp}</TableCell>
+                                <TableCell align="right">{row.is_successful ? <CheckCircleIcon color="primary" /> : <CancelIcon color="secondary" />}</TableCell>
+                                <TableCell align="right">{row.time_stamp.replace(/T/, ' ').replace(/\..+/, '')}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
