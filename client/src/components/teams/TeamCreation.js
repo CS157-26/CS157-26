@@ -29,19 +29,54 @@ class TeamCreation extends Component {
         super();
         this.state = {
             teamnameField: "",
-            assignedTypes: {}
+            assignedTypes: {},
+            inputValidation: {
+                teamnameField: "",
+                assignedTypes: ""
+            }
         };
     }
 
     handleChange = e => {
         e.preventDefault();
+        this.setState({
+            ...this.state,
+            [e.target.name]: e.target.value
+        });
+    };
 
-        const newTeam = {
-            name: this.state.name,
-            types: this.state.assignedTypes
+    validateInput = () => {
+        let validationResults = {
+            teamnameField: "",
+            assignedTypes: ""
+        };
+
+        if (this.state.teamnameField.length > 0) {
+            // check if name exists
+        } else {
+            validationResults.teamnameField = "Please enter a new team name.";
         }
-        console.log(newTeam);
-        //this.props.createTeam(newTeam);
+
+        if (Object.keys(this.state.assignedTypes).length < 1) {
+            validationResults.usernameField = "Assigned types cannot be empty.";
+        }
+
+        if (
+            validationResults.teamnameField === "" &&
+            validationResults.assignedTypes === ""
+        ) {
+            const newTeam = {
+                name: this.state.teamnameField,
+                types: this.state.assignedTypes
+            };
+            console.log(newTeam);
+            //this.props.createTeam(newTeam, this.props.history);
+        }
+
+        this.setState({
+            ...this.state,
+            inputValidation: validationResults
+        });
     };
 
     render() {
@@ -60,6 +95,8 @@ class TeamCreation extends Component {
                         teamnameField={this.state.teamnameField}
                         assignedTypes={this.state.assignedTypes}
                         handleChange={this.handleChange}
+                        inputValidation={this.inputValidation}
+                        validateInput={this.validateInput}
                     />
                 </Grid>
             </Grid>
