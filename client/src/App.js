@@ -12,6 +12,8 @@ import Registration from "./components/registration/Registration";
 import Login from "./components/login/Login";
 import LoginAttempts from "./components/login/LoginAttempts"
 
+import TeamCreation from "./components/teams/TeamCreation";
+
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
@@ -59,6 +61,7 @@ class App extends Component {
                 <Route exact path="/registration" component={Registration} />
                 <Route exact path="/login" component={Login} />
                 <Route exact path="/loginattempts" component={LoginAttempts} />
+                <PrivateRoute exact path="/teamcreation" component={TeamCreation} />>
               </Switch>
               </Grid>
             </Grid>
