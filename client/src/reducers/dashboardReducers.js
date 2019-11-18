@@ -1,11 +1,13 @@
 import {
     GET_TICKETS,
-    USER_LOADING
+    USER_LOADING,
+    GET_ERRORS
 } from "../actions/types";
 
 const initialState = {
     tickets: [],
-    loading: false
+    loading: false,
+    errors: {}
 };
 
 export default function (state = initialState, action) {
@@ -13,13 +15,22 @@ export default function (state = initialState, action) {
         case GET_TICKETS: {
             return {
                 tickets: action.payload,
-                loading: false
+                loading: false,
+                errors: {}
             };
         }
         case USER_LOADING: {
             return {
                 ...state,
-                loading: true
+                loading: true,
+                errors: {}
+            }
+        }
+        case GET_ERRORS: {
+            return {
+                ...state,
+                loading: false,
+                errors: action.payload
             }
         }
         default:

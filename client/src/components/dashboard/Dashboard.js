@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
+import PropTypes from "prop-types";
 
+import { connect } from "react-redux";
+import { getOverviewUserTickets } from "../../actions/dashboardActions";
 
 
 import { Grid, Card, CardContent, withStyles } from "@material-ui/core";
@@ -20,8 +23,19 @@ class Dashboard extends Component {
         this.state = {};
     }
 
+    componentDidMount = () => {
+        const { getOverviewUserTickets, auth } = this.props;
+        getOverviewUserTickets(auth.user.id);
+    }
+
     render() {
-        const { classes } = this.props;
+        const { classes, dashboard } = this.props;
+
+        let ticketsMarkup = {};
+
+        if (dashboard.tickets.length > 0) {
+            // TODO: Do individual markup of the ticket here
+        }
 
         return (
             <Grid className={classes.w100} container direction="column" justify="flex-start" alignItems="center">
@@ -33,6 +47,14 @@ class Dashboard extends Component {
     }
 }
 
-Dashboard.propTypes = {};
+Dashboard.propTypes = {
+    auth: PropTypes.object.isRequired,
+    dashboard: PropTypes.object.isRequired
+};
 
-export default withStyles(styles)(Dashboard);
+const mapStateToProps = state => ({
+    auth: state.auth,
+    dashboard: state.dashboard
+})
+
+export default connect(mapStateToProps, {getOverviewUserTickets})(withStyles(styles)(Dashboard));
