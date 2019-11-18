@@ -10,6 +10,7 @@ import { withStyles, Grid } from "@material-ui/core";
 import Landing from "./components/landing/Landing";
 import Registration from "./components/registration/Registration";
 import Login from "./components/login/Login";
+import LoginAttempts from "./components/login/LoginAttempts"
 
 
 import Navbar from "./components/layout/Navbar";
@@ -57,6 +58,7 @@ class App extends Component {
                 <Route exact path="/" component={Landing} />
                 <Route exact path="/registration" component={Registration} />
                 <Route exact path="/login" component={Login} />
+                <Route exact path="/loginattempts" component={LoginAttempts} />
               </Switch>
               </Grid>
             </Grid>
