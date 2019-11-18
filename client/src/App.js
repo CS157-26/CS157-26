@@ -7,10 +7,15 @@ import store from "./store";
 
 import { withStyles, Grid } from "@material-ui/core";
 
+import PrivateRoute from "./components/PrivateRoute";
 import Landing from "./components/landing/Landing";
 import Registration from "./components/registration/Registration";
 import Login from "./components/login/Login";
+<<<<<<< HEAD
 import LoginAttempts from "./components/login/LoginAttempts"
+=======
+import Dashboard from "./components/dashboard/Dashboard";
+>>>>>>> Created files for Dashboard actions, reducers and component
 
 import TeamCreation from "./components/teams/TeamCreation";
 
@@ -20,7 +25,6 @@ import Footer from "./components/layout/Footer";
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
 import { setCurrentUser, logoutUser } from "./actions/loginActions";
-import PrivateRoute from "./components/PrivateRoute";
 
 if (localStorage.jwtToken) {
   const token = localStorage.jwtToken;
@@ -40,6 +44,12 @@ const styles = {
     margin: 0,
     padding: 0,
     boxSizing: "border-box",
+  },
+  minHeight: {
+    minHeight: "95vh",
+    margin: 0,
+    padding: 0,
+    boxSizing: "border-box"
   },
   border: {
     border: "1px solid black"
@@ -61,6 +71,7 @@ class App extends Component {
                 <Route exact path="/login" component={Login} />
                 <PrivateRoute exact path="/loginattempts" component={LoginAttempts} />
                 <PrivateRoute exact path="/teamcreation" component={TeamCreation} />>
+                <PrivateRoute exact path="/dashboard" component={Dashboard} />
               </Switch>
             </Grid>
           </Grid>
