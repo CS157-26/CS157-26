@@ -14,6 +14,8 @@ import LoginAttempts from "./components/login/LoginAttempts"
 
 import TeamCreation from "./components/teams/TeamCreation";
 
+import TeamCreation from "./components/teams/TeamCreation";
+
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
@@ -53,19 +55,19 @@ class App extends Component {
     return (
       <Provider store={store}>
         <Router>
-            <Navbar />
-            <Grid container direction="row" justify="center" alignItems="center" className={classes.minHeight}>
-              <Grid item>
+          <Navbar />
+          <Grid container direction="row" justify="center" alignItems="center" className={classes.minHeight}>
+            <Grid item>
               <Switch>
                 <Route exact path="/" component={Landing} />
                 <Route exact path="/registration" component={Registration} />
                 <Route exact path="/login" component={Login} />
-                <Route exact path="/loginattempts" component={LoginAttempts} />
+                <PrivateRoute exact path="/loginattempts" component={LoginAttempts} />
                 <PrivateRoute exact path="/teamcreation" component={TeamCreation} />>
               </Switch>
-              </Grid>
             </Grid>
-            <Footer />
+          </Grid>
+          <Footer />
         </Router>
       </Provider>
     );
