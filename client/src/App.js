@@ -33,17 +33,14 @@ if (localStorage.jwtToken) {
 }
 
 const styles = {
-  root: {
-    flexGrow: 1
-  },
-  w100: {
-    width: "100%"
-  },
-  m0: {
-    margin: 0
+  minHeight: {
+    minHeight: "95vh",
+    margin: 0,
+    padding: 0,
+    boxSizing: "border-box",
   },
   border: {
-    border: "2px solid red"
+    border: "1px solid black"
   }
 };
 
@@ -52,18 +49,18 @@ class App extends Component {
     const { classes } = this.props;
     return (
       <Provider store={store}>
-        <Router className={classes.m0}>
-          <Navbar />
-          <Grid container direction="row">
-            <Grid item xs={12}>
+        <Router>
+            <Navbar />
+            <Grid container direction="row" justify="center" alignItems="center" className={classes.minHeight}>
+              <Grid item>
               <Switch>
                 <Route exact path="/" component={Landing} />
                 <Route exact path="/registration" component={Registration} />
                 <Route exact path="/login" component={Login} />
               </Switch>
+              </Grid>
             </Grid>
-          </Grid>
-          <Footer />
+            <Footer />
         </Router>
       </Provider>
     );
