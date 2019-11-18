@@ -14,9 +14,6 @@ import LoginAttempts from "./components/login/LoginAttempts"
 
 import TeamCreation from "./components/teams/TeamCreation";
 
-import TeamCreation from "./components/teams/TeamCreation";
-
-
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 
