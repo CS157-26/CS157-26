@@ -10,7 +10,9 @@ import { withStyles, Grid } from "@material-ui/core";
 import Landing from "./components/landing/Landing";
 import Registration from "./components/registration/Registration";
 import Login from "./components/login/Login";
+import LoginAttempts from "./components/login/LoginAttempts"
 
+import TeamCreation from "./components/teams/TeamCreation";
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
@@ -33,17 +35,14 @@ if (localStorage.jwtToken) {
 }
 
 const styles = {
-  root: {
-    flexGrow: 1
-  },
-  w100: {
-    width: "100%"
-  },
-  m0: {
-    margin: 0
+  minHeight: {
+    minHeight: "95vh",
+    margin: 0,
+    padding: 0,
+    boxSizing: "border-box",
   },
   border: {
-    border: "2px solid red"
+    border: "1px solid black"
   }
 };
 
@@ -52,14 +51,16 @@ class App extends Component {
     const { classes } = this.props;
     return (
       <Provider store={store}>
-        <Router className={classes.m0}>
+        <Router>
           <Navbar />
-          <Grid container direction="row">
-            <Grid item xs={12}>
+          <Grid container direction="row" justify="center" alignItems="center" className={classes.minHeight}>
+            <Grid item>
               <Switch>
                 <Route exact path="/" component={Landing} />
                 <Route exact path="/registration" component={Registration} />
                 <Route exact path="/login" component={Login} />
+                <PrivateRoute exact path="/loginattempts" component={LoginAttempts} />
+                <PrivateRoute exact path="/teamcreation" component={TeamCreation} />>
               </Switch>
             </Grid>
           </Grid>
