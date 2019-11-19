@@ -112,10 +112,11 @@ async function getTicketAssignees(ticket_id)
 function buildTicketFilter(user_id, team_id)
 {
     var strA = [
-        `SELECT DISTINCT ticket.ticket_id, ticket.item_id, ticket.author_id, ticket.title, ticket.current_status,
+        `SELECT DISTINCT ticket.ticket_id, ticket.item_id, ticket.title, ticket.current_status,
         ticket.priority, ticket.creation_date, ticket.modification_date, ticket.protected_status,
-        item.name AS item_name, type.name AS type_name, category.name AS category_name
+        item.name AS item_name, type.name AS type_name, category.name AS category_name, user.username AS author_name
         FROM tickets ticket
+        JOIN users user ON user.user_id = ticket.author_id
         JOIN items item ON item.item_id = ticket.item_id
         JOIN types type ON type.type_id = item.type_id
         JOIN categories category ON category.category_id = type.category_id
