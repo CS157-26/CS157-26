@@ -191,13 +191,14 @@ router.post("/details",
         const {ticket_id} = req.body;
 
         db.query(
-       `SELECT ticket.*, item.name AS "item_name", type.name AS "type_name",
-        category.name AS "category_name"
-        FROM tickets ticket
-        JOIN items item ON item.item_id = ticket.item_id
-        JOIN types type ON type.type_id = item.type_id
-        JOIN categories category ON category.category_id = type.category_id
-        WHERE ticket.ticket_id = ?`, [ticket_id],
+       `SELECT ticket.*, author.username as "author_name", item.name AS "item_name", type.name AS "type_name",
+       category.name AS "category_name"
+       FROM tickets ticket
+       JOIN items item ON item.item_id = ticket.item_id
+       JOIN types type ON type.type_id = item.type_id
+       JOIN categories category ON category.category_id = type.category_id
+       JOIN users author ON ticket.author_id = author.user_id
+       WHERE ticket.ticket_id = ?`, [ticket_id],
         (err, rows, fields) => {
             if (err) {
                 res.status(500).json({msg:"Error: There was an issue retreiving the ticket."});
@@ -214,8 +215,8 @@ router.post("/details",
 
 // @route   GET api/tickets/overview
 // @desc    Returns a list of ticket overview info
-// @param user_id - Specifies the user we want to retrieve tickets for
-// @param team_id - Specifies the team we want to retrieve tickets for
+// @param   user_id - Specifies the user we want to retrieve tickets for
+// @param   team_id - Specifies the team we want to retrieve tickets for
 // @access  Private
 router.post("/overview",
     //passport.authenticate('jwt', {session: false}),
@@ -236,7 +237,7 @@ router.post("/overview",
                 if (err) {
                     res
                     .status(500)
-                    .json({msg:"Error: There was an issue retreving the requested tickets", error:err});
+                    .json({msg:"Error: There was an issue retrieving the requested tickets", error:err});
                 } else {
                     res
                     .status(200)

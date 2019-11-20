@@ -31,10 +31,11 @@ class Dashboard extends Component {
         this.handleModalOpen = this.handleModalOpen.bind(this);
     }
 
-    handleClose = () => {
+    handleClose = (event) => {
+        event.preventDefault();
         this.setState({
             ...this.state,
-            examinedTicketId: null,
+            examinedTicketId: {},
             isModalOpen: false
         });
     }
