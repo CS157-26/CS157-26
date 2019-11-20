@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { getOverviewUserTickets } from "../../actions/dashboardActions";
 
 
-import { Grid, Card, CardContent, withStyles } from "@material-ui/core";
+import { Grid, withStyles, Modal } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 
 const styles = theme => ({
@@ -21,7 +21,29 @@ class Dashboard extends Component {
     constructor() {
         super();
 
-        this.state = {};
+        this.state = {
+            examinedTicketId: null,
+            isModalOpen: false
+        };
+
+        this.handleClose = this.handleClose.bind(this);
+        this.handleModalOpen = this.handleModalOpen.bind(this);
+    }
+
+    handleClose = () => {
+        this.setState({
+            ...this.state,
+            examinedTicketId: null,
+            isModalOpen: false
+        });
+    }
+
+    handleModalOpen = (ticket_id) => {
+        this.setState({
+            ...this.state,
+            examinedTicketId: ticket_id,
+            isModalOpen: true
+        })
     }
 
     componentDidMount = () => {
@@ -32,15 +54,41 @@ class Dashboard extends Component {
     render() {
         const { classes, dashboard } = this.props;
 
-        const columns = ["Title", "Current Status", "Priority", "Item", "Type", "Category", "Author", "Creation Date"];
-        let data = [];
+        const columns = [
+            {name: "title", label: "Title"},
+            {name: "current_status", label: "Current Status"},
+            {name: "priority", label: "Priority"},
+            {name: "item", label: "Item"},
+            {name: "type", label: "Type"},
+            {name: "category", label: "Category"},
+            {name: "author", label: "Author"},
+            {name: "creation_date", label: "Creation Date"}
+        ];
+
+        let ticketData = [];
         if (dashboard.tickets.length > 0) {
-            data = dashboard.tickets.map(ticket => {
-                return [ticket.title, ticket.current_status, ticket.priority, ticket.item_name, ticket.type_name, ticket.category_name, ticket.author_name, ticket.creation_date];
+            ticketData = dashboard.tickets.map(ticket => {
+                return {
+                    title: ticket.title,
+                    current_status: ticket.current_status,
+                    priority: ticket.priority,
+                    item: ticket.item_name,
+                    type: ticket.type_name,
+                    category: ticket.category_name,
+                    author: ticket.author_name,
+                    creation_date: ticket.creation_date.substring(0, 10),
+                    ticket_id: ticket.ticket_id
+                };
             });
         }
+
+        // function(rowData: string[], rowMeta: { dataIndex: number, rowIndex: number }) => void
+        const handleRowClick = (rowData, rowMeta) => {
+            this.handleModalOpen(rowData.ticket_id);
+        };
+
         const options = {
-            filterType: "checkbox"
+            onRowClick: handleRowClick
         };
 
         return (
@@ -48,11 +96,14 @@ class Dashboard extends Component {
                 <Grid item xs={12}>
                     <MUIDataTable
                         title={"Open Tickets"}
-                        data={data}
+                        data={ticketData}
                         columns={columns}
                         options={options}
                     />
                 </Grid>
+                <Modal open={this.state.isModalOpen} onClose={this.handleClose}>
+                    <h2>Okay</h2>
+                </Modal>
             </Grid>
         )
     }
