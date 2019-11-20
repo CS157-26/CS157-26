@@ -131,7 +131,7 @@ const buildTicketFilter = (user_id, team_id) => {
     JOIN types type ON type.type_id = item.type_id
     JOIN categories category ON category.category_id = type.category_id
     JOIN userassignment assignees ON assignees.ticket_id = ticket.ticket_id ${filter}`;
-    
+
     return query;
 }
 
@@ -175,7 +175,7 @@ async function buildDetailsDoc(ticketDetails, ticket_id, res)
 // @desc    Returns a ticket
 // @param ticket_id - the id of the ticket with the details
 // @access  Private
-router.get("/details",
+router.post("/details",
     //passport.authenticate('jwt', {session: false}),
     [
         check('ticket_id').exists()
@@ -185,7 +185,7 @@ router.get("/details",
         if (!validationError.isEmpty()) {
             return res
             .status(400)
-            .json({msg:"Bad Request: A ticket_id must be provided."});
+            .send({msg:"Bad Request: A ticket_id must be provided."});
         }
 
         const {ticket_id} = req.body;
@@ -217,7 +217,7 @@ router.get("/details",
 // @param user_id - Specifies the user we want to retrieve tickets for
 // @param team_id - Specifies the team we want to retrieve tickets for
 // @access  Private
-router.get("/overview",
+router.post("/overview",
     //passport.authenticate('jwt', {session: false}),
     [
     ],

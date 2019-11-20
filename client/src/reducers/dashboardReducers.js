@@ -1,35 +1,56 @@
 import {
-    GET_TICKETS,
-    USER_LOADING,
+    GET_TICKETS_OVERVIEW,
+    GET_TICKET_DETAILS,
+    TICKET_OVERVIEW_LOADING,
+    TICKET_DETAILS_LOADING,
     GET_ERRORS
 } from "../actions/types";
 
 const initialState = {
-    tickets: [],
-    loading: false,
+    tickets_overview: [],
+    ticket_details: {},
+    overview_loading: false,
+    details_loading: false,
     errors: {}
 };
 
 export default function (state = initialState, action) {
     switch (action.type) {
-        case GET_TICKETS: {
+        case GET_TICKETS_OVERVIEW: {
             return {
-                tickets: action.payload,
+                ...state,
+                tickets_overview: action.payload,
                 loading: false,
                 errors: {}
             };
         }
-        case USER_LOADING: {
+        case GET_TICKET_DETAILS: {
             return {
                 ...state,
-                loading: true,
+                ticket_details: action.payload,
+                details_loading: false,
+                errors: {}
+            }
+        }
+        case TICKET_OVERVIEW_LOADING: {
+            return {
+                ...state,
+                overview_loading: true,
+                errors: {}
+            }
+        }
+        case TICKET_DETAILS_LOADING: {
+            return {
+                ...state,
+                details_loading: true,
                 errors: {}
             }
         }
         case GET_ERRORS: {
             return {
                 ...state,
-                loading: false,
+                overview_loading: false,
+                details_loading: false,
                 errors: action.payload
             }
         }

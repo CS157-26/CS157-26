@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getOverviewUserTickets } from "../../actions/dashboardActions";
 
+import TicketCard from "./TicketCard";
 
 import { Grid, withStyles, Modal } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
@@ -66,8 +67,8 @@ class Dashboard extends Component {
         ];
 
         let ticketData = [];
-        if (dashboard.tickets.length > 0) {
-            ticketData = dashboard.tickets.map(ticket => {
+        if (dashboard.tickets_overview.length > 0) {
+            ticketData = dashboard.tickets_overview.map(ticket => {
                 return {
                     title: ticket.title,
                     current_status: ticket.current_status,
@@ -82,9 +83,8 @@ class Dashboard extends Component {
             });
         }
 
-        // function(rowData: string[], rowMeta: { dataIndex: number, rowIndex: number }) => void
         const handleRowClick = (rowData, rowMeta) => {
-            this.handleModalOpen(rowData.ticket_id);
+            this.handleModalOpen(ticketData[rowMeta.dataIndex].ticket_id);
         };
 
         const options = {
@@ -102,7 +102,7 @@ class Dashboard extends Component {
                     />
                 </Grid>
                 <Modal open={this.state.isModalOpen} onClose={this.handleClose}>
-                    <h2>Okay</h2>
+                    <TicketCard ticketId={this.state.examinedTicketId}/>
                 </Modal>
             </Grid>
         )
