@@ -11,11 +11,8 @@ import PrivateRoute from "./components/PrivateRoute";
 import Landing from "./components/landing/Landing";
 import Registration from "./components/registration/Registration";
 import Login from "./components/login/Login";
-<<<<<<< HEAD
 import LoginAttempts from "./components/login/LoginAttempts"
-=======
 import Dashboard from "./components/dashboard/Dashboard";
->>>>>>> Created files for Dashboard actions, reducers and component
 
 import TeamCreation from "./components/teams/TeamCreation";
 
