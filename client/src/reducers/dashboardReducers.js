@@ -3,8 +3,11 @@ import {
     GET_TICKET_DETAILS,
     TICKET_OVERVIEW_LOADING,
     TICKET_DETAILS_LOADING,
+    CLEAR_TICKETS,
+    CLEAR_DETAILS,
     GET_ERRORS
 } from "../actions/types";
+import { appendFileSync } from "fs";
 
 const initialState = {
     tickets_overview: [],
@@ -53,6 +56,19 @@ export default function (state = initialState, action) {
                 details_loading: false,
                 errors: action.payload
             }
+        }
+        case CLEAR_TICKETS: {
+            return {
+                ...state,
+                tickets_overview: [],
+                ticket_details: {}
+            };
+        }
+        case CLEAR_DETAILS: {
+            return {
+                ...state,
+                ticket_details: {}
+            };
         }
         default:
             return state;

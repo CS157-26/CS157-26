@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GET_ERRORS, GET_TICKETS_OVERVIEW, TICKET_OVERVIEW_LOADING, TICKET_DETAILS_LOADING, GET_TICKET_DETAILS } from "./types";
+import { GET_ERRORS, GET_TICKETS_OVERVIEW, TICKET_OVERVIEW_LOADING, TICKET_DETAILS_LOADING, GET_TICKET_DETAILS, CLEAR_TICKETS, CLEAR_DETAILS } from "./types";
 
 export const getOverviewUserTickets = (userId, teamId) => dispatch => {
   dispatch({type: TICKET_OVERVIEW_LOADING});
@@ -33,4 +33,12 @@ export const getTicketDetails = (ticketId) => dispatch => {
         payload: err
       });
     })
+}
+
+export const clearTickets = () => dispatch => {
+  dispatch({type: CLEAR_TICKETS});
+};
+
+export const clearTicketDetails = () => dispatch => {
+  dispatch({type: CLEAR_DETAILS});
 }

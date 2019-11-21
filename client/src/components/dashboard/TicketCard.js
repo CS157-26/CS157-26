@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { connect } from "react-redux";
 import { getTicketDetails } from "../../actions/dashboardActions";
 
-import { Grid, Card, CardContent, Typography, CircularProgress, withStyles, Button } from "@material-ui/core";
+import { Grid, Card, CardContent, Typography, CircularProgress, withStyles } from "@material-ui/core";
 
 const styles = theme => ({
     h100: {
@@ -40,6 +40,33 @@ class TicketCard extends Component {
                 return (<Typography variant="body1">{assignee.username}</Typography>);
             });
 
+            let commentsMarkup;
+            if (comments.length > 0) {
+                commentsMarkup = comments.map(comment => {
+                    return (
+                        <Grid item xs={12}>
+                            <Grid container direction="row" justify="space-between" alignItems="center">
+                                <Grid item>
+                                    <Typography variant="subtitle1" className={classes.heading}>User {comment.author_id}</Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Typography variant="subtitle1" className={classes.heading}>Posted on: {comment.creation_date.substring(0, 10)}</Typography>
+                                </Grid>
+                            </Grid>
+                            <Typography variant="body1">
+                                {comment.content_text}
+                            </Typography>
+                        </Grid>
+                    );
+                });
+            } else {
+                commentsMarkup = (
+                    <Grid item xs={12}>
+                        <Typography variant="subtitle1" className={classes.heading}>There are no comments for this ticket.</Typography>
+                    </Grid>
+                );
+            }
+
             content = (
                 <Grid container direction="column" justify="center" spacing={2}>
                     <Grid item xs={12} className={classes.w100}>
@@ -48,8 +75,8 @@ class TicketCard extends Component {
                                 <Typography variant="h5">{title}</Typography>
                             </Grid>
                             <Grid item>
-                                <Typography variant="h6" display="inline" className={classes.heading}>ID: </Typography>
-                                <Typography variant="h6" display="inline" className={classes.unbold}>{ticket_id}</Typography>
+                                <Typography variant="subtitle1" display="inline" className={classes.heading}>ID: </Typography>
+                                <Typography variant="subtitle1" display="inline" className={classes.unbold}>{ticket_id}</Typography>
                             </Grid>
                         </Grid>
                         <Typography variant="body1">{content_text}</Typography>
@@ -58,68 +85,70 @@ class TicketCard extends Component {
                         <hr/>
                     </Grid>
                     <Grid item>
-                        <Typography variant="h6" className={classes.heading}>Author:</Typography>
+                        <Typography variant="subtitle1" className={classes.heading}>Author:</Typography>
                         <Typography variant="body1">{author_name}</Typography>
                     </Grid>
                     <Grid item>
-                        <Typography variant="h6" className={classes.heading}>Assignees:</Typography>
+                        <Typography variant="subtitle1" className={classes.heading}>Assignees:</Typography>
                         {assigneesMarkup}
                     </Grid>
                     <Grid item xs={12}>
-                        <Grid container direction="row" alignItems="center" spacing={4}>
+                        <Grid container direction="row" justify="space-between" alignItems="center" spacing={4}>
                             <Grid item>
-                                <Typography variant="h6" className={classes.heading}>Current Status:</Typography>
+                                <Typography variant="subtitle1" className={classes.heading}>Current Status:</Typography>
                                 <Typography variant="body1">{current_status}</Typography>
                             </Grid>
                             <Grid item>
-                                <Typography variant="h6" className={classes.heading}>Priority:</Typography>
+                                <Typography variant="subtitle1" className={classes.heading}>Priority:</Typography>
                                 <Typography variant="body1">{priority}</Typography>
+                            </Grid>
+                            <Grid item>
+                                <Typography variant="subtitle1" className={classes.heading}>Protected: </Typography>
+                                <Typography variant="body1">{protected_status ? "True" : "False"}</Typography>
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12} className={classes.w100}>
                         <Grid container direction="row" justify="space-between" alignItems="center" spacing={4}>
                             <Grid item>
-                                <Typography variant="h6" className={classes.heading}>Item:</Typography>
+                                <Typography variant="subtitle1" className={classes.heading}>Item:</Typography>
                                 <Typography variant="body1">{item_name}</Typography>
                             </Grid>
                             <Grid item>
-                                <Typography variant="h6" className={classes.heading}>Type:</Typography>
+                                <Typography variant="subtitle1" className={classes.heading}>Type:</Typography>
                                 <Typography variant="body1">{type_name}</Typography>
                             </Grid>
                             <Grid item>
-                                <Typography variant="h6" className={classes.heading}>Category:</Typography>
+                                <Typography variant="subtitle1" className={classes.heading}>Category:</Typography>
                                 <Typography variant="body1">{category_name}</Typography>
                             </Grid>
                         </Grid>
                     </Grid>
                     <Grid item xs={12}>
-                        <Grid container direction="row" alignItems="center" spacing={4}>
+                        <Grid container direction="row" justify='space-between' alignItems="center" spacing={4}>
                             <Grid item>
-                                <Typography variant="h6" className={classes.heading}>Creation Date:</Typography>
-                                <Typography variant="body1">{creation_date}</Typography>
+                                <Typography variant="subtitle1" className={classes.heading}>Created on:</Typography>
+                                <Typography variant="body1">{creation_date.substring(0, 10)}</Typography>
                             </Grid>
                             <Grid item>
-                                <Typography variant="h6" className={classes.heading}>Modification Date:</Typography>
-                                <Typography variant="body1">{modification_date}</Typography>
+                                <Typography variant="subtitle1" className={classes.heading}>Modified on:</Typography>
+                                <Typography variant="body1">{modification_date.substring(0, 10)}</Typography>
                             </Grid>
                         </Grid>
+                    </Grid>
+                    <Grid item xs={12} className={classes.w100}>
+                        <hr/>
                     </Grid>
                     <Grid item xs={12}>
-                        <Grid container direction="row" justify="center" alignItems="center" spacing={4}>
-                            <Grid item>
-                                <Button variant="contained" onClick={this.props.handleClose}>
-                                    CLOSE
-                                </Button>
-                            </Grid>
-                        </Grid>
+                        <Typography variant="h5">Comments</Typography>
                     </Grid>
+                    {commentsMarkup}
                 </Grid>
             );
         }
 
         return (
-            <Grid container direction="row" justify="center" alignItems="center" className={classes.h100}>
+            <Grid container direction="row" justify="center" alignItems="center">
                 <Grid item>
                     <Card>
                         <CardContent>
@@ -129,6 +158,7 @@ class TicketCard extends Component {
                 </Grid>
             </Grid>
         );
+        // TODO: Display the teams the user is part of & Display comments made by the user.
     }
 }
 

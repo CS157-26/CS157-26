@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from "prop-types";
 
 import { connect } from "react-redux";
-import { getOverviewUserTickets } from "../../actions/dashboardActions";
+import { getOverviewUserTickets, clearTickets, clearTicketDetails } from "../../actions/dashboardActions";
 
 import TicketCard from "./TicketCard";
 
@@ -31,8 +31,18 @@ class Dashboard extends Component {
         this.handleModalOpen = this.handleModalOpen.bind(this);
     }
 
+    componentDidMount = () => {
+        const { getOverviewUserTickets, auth } = this.props;
+        getOverviewUserTickets(auth.user.id, auth.user.team);
+    }
+
+    componentWillUnmount = () => {
+        this.props.clearTickets();
+    }
+
     handleClose = (event) => {
         event.preventDefault();
+        this.props.clearTicketDetails();
         this.setState({
             ...this.state,
             examinedTicketId: {},
@@ -46,11 +56,6 @@ class Dashboard extends Component {
             examinedTicketId: ticket_id,
             isModalOpen: true
         })
-    }
-
-    componentDidMount = () => {
-        const { getOverviewUserTickets, auth } = this.props;
-        getOverviewUserTickets(auth.user.id, auth.user.team);
     }
 
     render() {
@@ -96,14 +101,16 @@ class Dashboard extends Component {
             <Grid className={classes.w100} container direction="column" justify="flex-start" alignItems="center">
                 <Grid item xs={12}>
                     <MUIDataTable
-                        title={"Open Tickets"}
+                        title={"Your Tickets"}
                         data={ticketData}
                         columns={columns}
                         options={options}
                     />
                 </Grid>
                 <Modal open={this.state.isModalOpen} onClose={this.handleClose}>
-                    <TicketCard ticketId={this.state.examinedTicketId}/>
+                    <TicketCard 
+                        ticketId={this.state.examinedTicketId}
+                    />
                 </Modal>
             </Grid>
         )
@@ -120,4 +127,4 @@ const mapStateToProps = state => ({
     dashboard: state.dashboard
 })
 
-export default connect(mapStateToProps, {getOverviewUserTickets})(withStyles(styles)(Dashboard));
+export default connect(mapStateToProps, {getOverviewUserTickets, clearTickets, clearTicketDetails})(withStyles(styles)(Dashboard));
