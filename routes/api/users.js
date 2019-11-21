@@ -107,7 +107,7 @@ router.post("/",
 router.get("/teams", async (req, res) => {
     const { user_id } = req.body;
     if (user_id) {
-        const query = `SELECT name FROM teammembers, teams WHERE user_id=${user_id} AND teammembers.team_id = teams.team_id`;
+        const query = `SELECT teams.* FROM users JOIN teammembers USING(user_id) JOIN teams USING(team_id) WHERE users.user_id=${user_id}`;
         db.query(query, (err, rows, field) => {
             if (err) {
                 res.status(500).send({ msg: "Query Error: There was an error in the database query."});
