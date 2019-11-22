@@ -305,7 +305,6 @@ router.post("/",
 // @req     author_id: The user id of the user whose comments history is to be queried
 // @req     ticket_id: The ticket id of the ticket that contains the comments to be queried
 // @req     limit: Optional number of comments to be queried
-// @access  Private
 router.post("/comments", checkSchema(commentsValidator.fetchCommentsValidation),(req, res) => {
     const errors = validationResult(req);
     if (errors.isEmpty() === false) {
@@ -378,6 +377,12 @@ router.post("/create", checkSchema(createTicketsValidation), (req, res) => {
     }
 });
 
+// @route   POST api/tickets/comments/create
+// @desc    Creates a ticket and adds it to the database
+// @req     ticket_id: The ticket that the comment will be embedded to
+// @req     author_id: The user_id of the author
+// @req     content_text: The text of th comment
+// @access  Private
 router.post("/comments/create", checkSchema(commentsValidator.createCommentsValidation), (req, res) => {
     const errors = validationResult(req);
     if (errors.isEmpty() === false) {
