@@ -398,7 +398,7 @@ router.post("/comments/create", checkSchema(commentsValidator.createCommentsVali
     });
 });
 
-// @route   POST api/tickets/comments/create
+// @route   PUT api/tickets/comments
 // @desc    Updates or edits an existing comment
 // @req     comment_id: The id of the comment to be updated
 // @req     content_text: The text to update the existing text
@@ -413,7 +413,7 @@ router.put("/comments", checkSchema(commentsValidator.updateCommentsValidation),
     const query = `
         UPDATE comments
         SET content_text=${content_text}, modification_date=CURRENT_TIME
-        WHERE comment_id=${comment_id}
+        WHERE comments.comment_id=${comment_id}
     `;
 
     db.query(query, (err, rows, fields) => {
@@ -421,6 +421,31 @@ router.put("/comments", checkSchema(commentsValidator.updateCommentsValidation),
             res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
         } else {
             res.status(200).send({ msg: "Comment successfully updated!"});
+        }
+    });
+});
+
+// @route   DELETE api/tickets/comments
+// @desc    Deletes a specific comment
+// @req     comment_id: The id of the comment to be deleted
+// @access  Private
+router.delete("/comments", checkSchema(commentsValidator.deleteCommentsValidation), (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
+    }
+
+    const {comment_id} = req.body;
+    const query = `
+        DELETE FROM comments
+        WHERE comments.comment_id=${comment_id}
+    `;
+
+    db.query(query, (err, rows, fields) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        } else {
+            res.status(200).send({ msg: "Comment successfully deleted!"});
         }
     });
 });

@@ -54,8 +54,17 @@ const updateCommentsValidation = {
     }
 };
 
+const deleteCommentsValidation = {
+    comment_id: {
+        in: ["body"],
+        isInt: true,
+        toInt: true
+    }
+};
+
 module.exports = {
     fetchCommentsValidation,
     createCommentsValidation,
-    updateCommentsValidation
+    updateCommentsValidation,
+    deleteCommentsValidation
 }
