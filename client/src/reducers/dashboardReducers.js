@@ -7,7 +7,6 @@ import {
     CLEAR_DETAILS,
     GET_ERRORS
 } from "../actions/types";
-import { appendFileSync } from "fs";
 
 const initialState = {
     tickets_overview: [],
