@@ -3,6 +3,18 @@ const router = express.Router();
 const { check , validationResult } = require("express-validator");
 const db = require("../../config/db");
 
+/**
+ * Checks if the given argument is of type string and is numeric
+ * @param {any} str     The argument to be checked
+ * @return {boolean}    True if numeric string; false if otherwise
+ */
+const isNumericString = (str) => {
+    if ((typeof str === 'string' || str instanceof String) && isNaN(str) === false) {
+        return true;
+    }
+    return false;
+}
+
 /*
 const passport = require("passport");
 const jwtStrategry  = require("./strategies/jwt");
@@ -303,6 +315,48 @@ router.post("/",
                 .send("success");
             }
         });
+});
+
+// @route   POST api/tickets/comments
+// @desc    Returns comments made by a user or comments to a specific ticket or comments made by a user for a specific ticket
+// @req     user_id: The user id of the user whose comments history is to be queried
+// @req     ticket_id: The ticket id of the ticket that contains the comments to be queried
+// @req     limit: Optional number of comments to be queried
+// @access  Private
+router.post("/comments", (req, res) => {
+    const {user_id, ticket_id, limit} = req.body;
+
+    let filter = "";
+
+    if (isNumericString(user_id)) {
+        filter = ` WHERE users.user_id=${user_id}`;
+    }
+    if (isNumericString(ticket_id)) {
+        if (filter.length > 0) {
+            filter += ` AND comments.author_id=${ticket_id}`;
+        } else {
+            filter = ` WHERE comments.author_id=${ticket_id}`;
+        }
+    }
+
+    if (filter.length === 0) {
+        return res.status(400).send({ error_msg: "Bad request: user_id and/or ticket_id required." });
+    }
+
+    let query = "SELECT comments.*, users.username FROM comments JOIN users ON(comments.author_id=users.user_id)";
+    query += filter;
+
+    if (isNumericString(limit)) {
+        query += ` LIMIT ${limit}`;
+    }
+
+    db.query(query, (err, rows, field) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        } else {
+            res.status(200).send(rows);
+        }
+    });
 });
 
 module.exports = router;
