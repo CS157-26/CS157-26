@@ -378,4 +378,24 @@ router.post("/create", checkSchema(createTicketsValidation), (req, res) => {
     }
 });
 
+router.post("/comments/create", checkSchema(commentsValidator.createCommentsValidation), (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
+    }
+
+    const {ticket_id, author_id, content_text} = req.body;
+    const query = `
+        INSERT INTO comments(ticket_id, author_id, content_text, creation_date, modification_date)
+        VALUES(${ticket_id}, ${author_id}, ${content_text}, CURRENT_TIME, CURRENT_TIME)`;
+
+    db.query(query, (err, rows, fields) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        } else {
+            res.status(200).send({ msg: "Comment successfully posted!"});
+        }
+    });
+});
+
 module.exports = router;
