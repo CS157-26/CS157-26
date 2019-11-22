@@ -5,18 +5,6 @@ const db = require("../../config/db");
 const { check, checkSchema, validationResult, body } = require("express-validator");
 const commentsValidator = require("../../validation/comments");
 
-/**
- * Checks if the given argument is of type string and is numeric
- * @param {any} str     The argument to be checked
- * @return {boolean}    True if numeric string; false if otherwise
- */
-const isNumericString = (str) => {
-    if ((typeof str === 'string' || str instanceof String) && isNaN(str) === false) {
-        return true;
-    }
-    return false;
-}
-
 /*
 const passport = require("passport");
 const jwtStrategry  = require("./strategies/jwt");
