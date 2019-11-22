@@ -39,7 +39,23 @@ const createCommentsValidation = {
     }
 };
 
+const updateCommentsValidation = {
+    comment_id: {
+        in: ["body"],
+        isInt: true,
+        toInt: true
+    },
+    content_text: {
+        in: ["body"],
+        isString: true,
+        isLength: {
+            options: {min: 1, max: undefined}
+        }
+    }
+};
+
 module.exports = {
     fetchCommentsValidation,
-    createCommentsValidation
+    createCommentsValidation,
+    updateCommentsValidation
 }

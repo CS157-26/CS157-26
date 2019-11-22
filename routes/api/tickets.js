@@ -398,4 +398,31 @@ router.post("/comments/create", checkSchema(commentsValidator.createCommentsVali
     });
 });
 
+// @route   POST api/tickets/comments/create
+// @desc    Updates or edits an existing comment
+// @req     comment_id: The id of the comment to be updated
+// @req     content_text: The text to update the existing text
+// @access  Private
+router.put("/comments", checkSchema(commentsValidator.updateCommentsValidation), (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
+    }
+
+    const {comment_id, content_text} = req.body;
+    const query = `
+        UPDATE comments
+        SET content_text=${content_text}, modification_date=CURRENT_TIME
+        WHERE comment_id=${comment_id}
+    `;
+
+    db.query(query, (err, rows, fields) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        } else {
+            res.status(200).send({ msg: "Comment successfully updated!"});
+        }
+    });
+});
+
 module.exports = router;
