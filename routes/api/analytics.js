@@ -20,7 +20,14 @@ GROUP BY team_id
 WHERE tickets.status = 'CLOSED'`
 
 // number of tickets given to a team over time, broken out by week.
-``
+// the number of tickets is the number of open tickets at that point in time
+
+`SELECT COUNT(*) FROM tickets
+JOIN items USING (item_id)
+JOIN types USING (type_id)
+JOIN teams USING (team_id)
+GROUP BY DATEPART('wk', tickets.creation_date) HAVING
+`
 
 // @route   GET api/analytics
 // @desc    
