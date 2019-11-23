@@ -3,7 +3,24 @@ const router = express.Router();
 const { check , validationResult } = require("express-validator");
 const db = require("../../config/db");
 
+// number of open tickets by team
+`SELECT COUNT(tickets.*), teams.* FROM tickets
+JOIN items USING (item_id)
+JOIN types USING (type_id)
+JOIN teams USING (team_id)
+GROUP BY team_id
+WHERE tickets.status <> 'CLOSED'`
 
+// average completion time of tickets by team
+`SELECT AVG(DATEDIFF(day, tickets.modification_date, tickets.creation_date)), teams.* FROM tickets
+JOIN items USING (item_id)
+JOIN types USING (type_id)
+JOIN teams USING (team_id)
+GROUP BY team_id
+WHERE tickets.status = 'CLOSED'`
+
+// number of tickets given to a team over time, broken out by week.
+``
 
 // @route   GET api/analytics
 // @desc    
