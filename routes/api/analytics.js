@@ -8,12 +8,12 @@ const db = require("../../config/db");
 function openTicketTeam() {
     return new Promise((res, rej)=> {
         db.query(
-        `SELECT COUNT(tickets.*), teams.* FROM tickets
+        `SELECT COUNT(*), teams.* FROM tickets
         JOIN items USING (item_id)
         JOIN types USING (type_id)
         JOIN teams USING (team_id)
-        GROUP BY team_id
-        WHERE tickets.status <> 'CLOSED'`, 
+        WHERE current_status <> 'CLOSED'
+        GROUP BY team_id`, 
         (err, rows, fields)=>{
             if (err) {
                 rej(err);
@@ -29,12 +29,13 @@ function openTicketTeam() {
 function avgCompletionTime() {
     return new Promise((res, rej)=>{
         db.query(
-        `SELECT AVG(DATEDIFF(day, tickets.modification_date, tickets.creation_date)), teams.* FROM tickets
+        `SELECT AVG(DATEDIFF(tickets.modification_date, tickets.creation_date)), teams.*
+        FROM tickets
         JOIN items USING (item_id)
         JOIN types USING (type_id)
         JOIN teams USING (team_id)
-        GROUP BY team_id
-        WHERE tickets.status = 'CLOSED'`,
+        WHERE tickets.current_status = 'CLOSED'
+        GROUP BY team_id`,
         (err, rows, fields)=>{
             if (err) {
                 rej(err);
@@ -53,6 +54,13 @@ JOIN items USING (item_id)
 JOIN types USING (type_id)
 JOIN teams USING (team_id)
 GROUP BY DATEPART('wk', tickets.creation_date) HAVING
+`
+// we need a query, that returns the number of open tickets on a team, in a given week.
+`SELECT COUNT(*) FROM tickets
+JOIN items USING (item_id)
+JOIN types USING (type_id)
+JOIN teams USING (team_id)
+WHERE team_id = ? AND (tickets.status <> 'CLOSED' OR (tickets.modification_date > ?)) 
 `
 
 
