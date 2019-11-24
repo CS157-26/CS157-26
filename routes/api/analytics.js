@@ -8,12 +8,13 @@ const moment = require("momentjs");
 function openTicketTeam() {
     return new Promise((res, rej)=> {
         db.query(
-        `SELECT COUNT(*), teams.* FROM tickets
+        `SELECT teams.*, COUNT(*) AS 'open_tickets' FROM tickets
         JOIN items USING (item_id)
         JOIN types USING (type_id)
         JOIN teams USING (team_id)
         WHERE current_status <> 'CLOSED'
-        GROUP BY team_id`, 
+        GROUP BY team_id
+        ORDER BY team_id`, 
         (err, rows, fields)=>{
             if (err) {
                 rej(err);
@@ -74,21 +75,115 @@ function ticketsAtTime(team_id, date)
 }
 
 
-async function ticketsOverTime(team_id, min, max, step) {
+async function ticketsOverTime(_team_id, _min, _max, _step) {
+    let start = moment(_min);
+    const end  = moment(_max);
+    const duration =  moment.duration(end.diff(start));
+    const delta_millis = duration.asMilliseconds() / _step;
+    let count_list = [];
+    for (let i = 0; i < _step; i++) {
+        try {
+            let result = await ticketsAtTime(_team_id, start);
+            count_list.push({index : i, val : result, date : start});
+        }
+        catch (rejection) {
+            // do something
+            count_list.push({index : i, val : [], date : start});
+        }
+        start = start.add(delta_millis, "milliseconds");
+    }
+    return {_team_id, start: _min, end: _max, step: _step, values: count_list};
 }
 
-// @route   GET api/analytics
-// @desc    
+// @route   GET api/analytics/openTicketsByTeam
+// @desc    Retrieves a list of the number of open tickets broken out by team
 // @access  Private
-router.get("/",
+router.get("/openTicketsByTeam",
     [],
-    (req, res) => {
-    var validationErr = validationResult(req);
+    async (req, res) => {
+    let validationErr = validationResult(req);
     //Validate whether the user entered necessary information
     if (!validationErr.isEmpty())
     {
         return res
             .status(400)
             .json({msg:"Bad Request:"});
+    }
+
+    try {
+        const result = await openTicketTeam();
+        return res
+            .status(200)
+            .json(result);
+    }
+    catch (rejection) {
+        return res
+            .status(500)
+            .json({msg:"Error: An issue occured while processing your request.", error:rejection});
+    }
+});
+
+// @route   GET api/analytics/avgCloseTime
+// @desc    Retrieves a list of the average close time (how long it takes for ticket to be closed in days) of tickets broken out by team.
+// @access  Private
+router.get("/avgCloseTime",
+    [],
+    async (req, res) => {
+    let validationErr = validationResult(req);
+    //Validate whether the user entered necessary information
+    if (!validationErr.isEmpty())
+    {
+        return res
+            .status(400)
+            .json({msg:"Bad Request:"});
+    }
+
+    try {
+        const result = await avgCompletionTime();
+        return res
+            .status(200)
+            .json(result);
+    }
+    catch (rejection) {
+        return res
+            .status(500)
+            .json({msg:"Error: An issue occured while processing your request.", error:rejection});
+    }
+});
+
+// @route   GET api/analytics/avgCloseTime
+// @desc    Retrieves a history of open tickets for a given team.
+// @param   team_id - Specifies the team to retrieve the history of.
+// @param   start - Specifies the starting date for the history interval.
+// @param   end - Specifies the end date for the history invertval.
+// @param   step - Specifies the number of samples to take from the history interval.
+// @access  Private
+router.get("/ticketsOverTime",
+    [
+        check('team_id').exists(),
+        check('start').exists(),
+        check('end').exists(),
+        check('step').isNumeric()
+    ],
+    async (req, res) => {
+    let validationErr = validationResult(req);
+    //Validate whether the user entered necessary information
+    if (!validationErr.isEmpty())
+    {
+        return res
+            .status(400)
+            .json({msg:"Bad Request:"});
+    }
+    let {team_id, start, end, step} = req.body;
+    try {
+        const result = await ticketsOverTime(team_id, start, end, step);
+        return res
+            .status(200)
+            .json(result);
+    }
+    catch (rejection) {
+        return res
+            .status(500)
+            .json({msg:"Error: An issue occured while processing your request.", error:rejection});
     }
 });
