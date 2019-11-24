@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { check , validationResult } = require("express-validator");
 const db = require("../../config/db");
-const moment = require("momentjs");
+const moment = require("moment");
 // number of open tickets by team
 
 function openTicketTeam() {
@@ -80,19 +80,20 @@ async function ticketsOverTime(_team_id, _min, _max, _step) {
     const end  = moment(_max);
     const duration =  moment.duration(end.diff(start));
     const delta_millis = duration.asMilliseconds() / _step;
+    console.log(delta_millis);
     let count_list = [];
     for (let i = 0; i < _step; i++) {
         try {
-            let result = await ticketsAtTime(_team_id, start);
-            count_list.push({index : i, val : result, date : start});
+            let result = await ticketsAtTime(_team_id, start.format("YYYY-MM-DD hh:mm:ss"));
+            count_list.push({index : i, val : result, date : start.toISOString()});
         }
         catch (rejection) {
             // do something
-            count_list.push({index : i, val : [], date : start});
+            count_list.push({index : i, val : rejection, date : start.toISOString()});
         }
         start = start.add(delta_millis, "milliseconds");
     }
-    return {_team_id, start: _min, end: _max, step: _step, values: count_list};
+    return {team_id: _team_id, start: _min, end: _max, step: _step, values: count_list};
 }
 
 // @route   GET api/analytics/openTicketsByTeam
@@ -174,7 +175,7 @@ router.get("/ticketsOverTime",
             .status(400)
             .json({msg:"Bad Request:"});
     }
-    let {team_id, start, end, step} = req.body;
+    var {team_id, start, end, step} = req.body;
     try {
         const result = await ticketsOverTime(team_id, start, end, step);
         return res
@@ -187,3 +188,5 @@ router.get("/ticketsOverTime",
             .json({msg:"Error: An issue occured while processing your request.", error:rejection});
     }
 });
+
+module.exports = router;
