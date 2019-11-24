@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const db = require("../../config/db");
 
-const { check, checkSchema, validationResult, body } = require("express-validator");
+const { check, checkSchema, validationResult } = require("express-validator");
 const commentsValidator = require("../../validation/comments");
+const inputValidation = require("../../validation/tickets");
 
 /*
 const passport = require("passport");
@@ -354,6 +355,13 @@ router.post("/comments", checkSchema(commentsValidator.fetchCommentsValidation),
             res.status(404).send({ msg: "Comments not found"});
         }
     });
+router.post("/create", checkSchema(inputValidation.createTicketsValidation), (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === true) {
+        return res.status(200).send(req.body);
+    } else {
+        return res.status(500).send(errors);
+    }
 });
 
 module.exports = router;
