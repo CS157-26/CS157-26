@@ -5,7 +5,7 @@ JOIN teams USING (team_id)
 WHERE current_status <> 'CLOSED'
 GROUP BY team_id;
 
-SELECT AVG(DATEDIFF(tickets.modification_date, tickets.creation_date)), teams.*
+SELECT AVG(DATEDIFF(tickets.modification_date, tickets.creation_date)) AS 'avg_days', teams.*
 FROM tickets
 JOIN items USING (item_id)
 JOIN types USING (type_id)
