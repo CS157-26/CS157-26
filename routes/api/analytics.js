@@ -3,8 +3,14 @@ const router = express.Router();
 const { check , validationResult } = require("express-validator");
 const db = require("../../config/db");
 const moment = require("moment");
-// number of open tickets by team
 
+/**
+ * This function retrieves the number of open tickets broken out by team at this moment in time.
+ * 
+ * This function is asynchronise and returns a promise.
+ * 
+ * @return {Promise<any>} A promise which resolves to the returned list of open tickets by team.
+ */
 function openTicketTeam() {
     return new Promise((res, rej)=> {
         db.query(
@@ -25,8 +31,15 @@ function openTicketTeam() {
     });
 }
 
-// average completion time of tickets by team
-
+/**
+ * This function retrieves the average resolution time for each team of tickets. That is, the
+ * average time it takes for a given team to mark a ticket as closed (resolving the issue). The
+ * values returned are in days.
+ * 
+ * This is an asynchronus function which returns a promise.
+ * 
+ * @return {Promise<any>} A promise which resolves to the returned list of averages by team.
+ */
 function avgCompletionTime() {
     return new Promise((res, rej)=>{
         db.query(
@@ -47,16 +60,21 @@ function avgCompletionTime() {
     });
 }
 
-// number of tickets given to a team over time, broken out by week.
-// the number of tickets is the number of open tickets at that point in time
-
-// we need a query, that returns the number of open tickets on a team, in a given week.
-
+/**
+ * Retrieves the number of open tickets at a given point of team for a specific team. This is used
+ * by the ticketsOverTime function to sample an interval of time.
+ * 
+ * This function is asynchronus and returns a promise.
+ * 
+ * @param {string} team_id The team id to retrieve open tickets for.
+ * @param {string} date The point in time at which to measure open tickets.
+ * @return {Promise<any>} A promise which resolves to a single value query result of the count of open tickets.
+ */
 function ticketsAtTime(team_id, date)
 {
     return new Promise((res, rej)=>{
         db.query(
-        `SELECT COUNT(*)
+        `SELECT COUNT(*) AS open_count
         FROM tickets
         JOIN items USING (item_id)
         JOIN types USING (type_id)
@@ -74,13 +92,28 @@ function ticketsAtTime(team_id, date)
     });
 }
 
-
+/**
+ * Generates a json document containing a list of open tickets for a given team over a specified
+ * time interval. This interval is specified using a start and end date. There are multiple formats
+ * accepted (as the input string is parsed using the Moment library).
+ * 
+ * Step's are used to indicate the number of values that will be taken from the inverval. That is,
+ * if there are 3 steps, over a 24 hr period, then the function will return a 3 element array
+ * with the number of tickets every 8 hours on that day.
+ * 
+ * This is an asynchronus function.
+ * 
+ * @param {string} _team_id The team id to retrieve ticket history information on.
+ * @param {string} _min The starting date for the history interval (multiple formats accepted).
+ * @param {string} _max The end date for the history interval (multiple formats accepted).
+ * @param {number} _step The number of samples that will be taken from the interval.
+ * @return {JSON} A Json document containing the retrieved information.
+ */
 async function ticketsOverTime(_team_id, _min, _max, _step) {
     let start = moment(_min);
     const end  = moment(_max);
     const duration =  moment.duration(end.diff(start));
     const delta_millis = duration.asMilliseconds() / _step;
-    console.log(delta_millis);
     let count_list = [];
     for (let i = 0; i < _step; i++) {
         try {
@@ -97,9 +130,10 @@ async function ticketsOverTime(_team_id, _min, _max, _step) {
 }
 
 // @route   GET api/analytics/openTicketsByTeam
-// @desc    Retrieves a list of the number of open tickets broken out by team
+// @desc    Retrieves a list of the number of open tickets broken out by team.
 // @access  Private
 router.get("/openTicketsByTeam",
+    //passport.authenticate('jwt', {session: false}),
     [],
     async (req, res) => {
     let validationErr = validationResult(req);
@@ -128,6 +162,7 @@ router.get("/openTicketsByTeam",
 // @desc    Retrieves a list of the average close time (how long it takes for ticket to be closed in days) of tickets broken out by team.
 // @access  Private
 router.get("/avgCloseTime",
+    //passport.authenticate('jwt', {session: false}),
     [],
     async (req, res) => {
     let validationErr = validationResult(req);
@@ -160,6 +195,7 @@ router.get("/avgCloseTime",
 // @param   step - Specifies the number of samples to take from the history interval.
 // @access  Private
 router.get("/ticketsOverTime",
+    //passport.authenticate('jwt', {session: false}),
     [
         check('team_id').exists(),
         check('start').exists(),
@@ -173,7 +209,7 @@ router.get("/ticketsOverTime",
     {
         return res
             .status(400)
-            .json({msg:"Bad Request:"});
+            .json({msg:"Bad Request: please specify a valid team_id, start date, end date, and step."});
     }
     var {team_id, start, end, step} = req.body;
     try {
