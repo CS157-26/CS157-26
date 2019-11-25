@@ -379,9 +379,12 @@ router.post("/create", checkSchema(createTicketsValidation), (req, res) => {
 
 // @route   POST api/tickets/comments/create
 // @desc    Creates a ticket and adds it to the database
-// @req     ticket_id: The ticket that the comment will be embedded to
-// @req     author_id: The user_id of the author
-// @req     content_text: The text of th comment
+// @req.body.ticket_id          ticket_id: The ticket that the comment will be embedded to
+// @req.body.author_id          author_id: The user_id of the author
+// @req.body.content_text       content_text: The text of the comment
+// @req.body.current_status     current_status: OPTIONAL changes the ticket's current status to this value
+// @req.body.priority           priority: OPTIONAL changes the ticket's priority to this value
+// @req.body.protected_status   protected_status: OPTIONAL changes the ticket's protected_status to this value
 // @access  Private
 router.post("/comments/create", checkSchema(commentsValidator.createCommentsValidation), (req, res) => {
     const errors = validationResult(req);
@@ -389,16 +392,49 @@ router.post("/comments/create", checkSchema(commentsValidator.createCommentsVali
         return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
     }
 
-    const {ticket_id, author_id, content_text} = req.body;
+    const {ticket_id, author_id, content_text, current_status, priority, protected_status} = req.body;
     const query = `
         INSERT INTO comments(ticket_id, author_id, content_text, creation_date, modification_date)
-        VALUES(${ticket_id}, ${author_id}, ${content_text}, CURRENT_TIME, CURRENT_TIME)`;
+        VALUES(${ticket_id}, ${author_id}, "${content_text}", CURRENT_TIME, CURRENT_TIME)`;
 
     db.query(query, (err, rows, fields) => {
         if (err) {
             res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
         } else {
-            res.status(200).send({ msg: "Comment successfully posted!"});
+            let updatedAttributes = "";
+            if (current_status) {
+                updatedAttributes = `current_status="${current_status}"`;
+            }
+            if (priority) {
+                if (updatedAttributes.length > 0) {
+                    updatedAttributes += `, priority=${priority}`;
+                } else {
+                    updatedAttributes = `priority=${priority}`;
+                }
+            }
+            if (protected_status != undefined) {
+                if (updatedAttributes.length > 0) {
+                    updatedAttributes += `, protected_status=${protected_status}`;
+                } else {
+                    updatedAttributes = `protected_status=${protected_status}`;
+                }
+            }
+
+            if (updatedAttributes.length > 0) {
+                const updateTicketQuery = `
+                    UPDATE tickets
+                    SET ${updatedAttributes}, modification_date=CURRENT_TIME
+                    WHERE tickets.ticket_id=${ticket_id}`;
+                db.query(updateTicketQuery, (updateErr, updateRows, updateFields) => {
+                    if (updateErr) {
+                        res.status(500).send({error_msg: "A database error occured"});
+                    } else {
+                        res.status(200).send({ msg: "Comment successfully posted and ticket successfully updated!"}); 
+                    }
+                })
+            } else {
+                res.status(200).send({ msg: "Comment successfully posted!"}); 
+            }
         }
     });
 });

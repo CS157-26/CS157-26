@@ -33,9 +33,28 @@ const createCommentsValidation = {
     content_text: {
         in: ["body"],
         isString: true,
+        toString: true,
         isLength: {
             options: {min: 1, max: undefined}
         }
+    },
+    current_status: {
+        optional: true,
+        isString: true,
+        toString: true,
+        isLength: {
+            options: {min: 1, max: undefined}
+        }
+    },
+    priority: {
+        optional: true,
+        isInt: true,
+        toInt: true
+    },
+    protected_status: {
+        optional: true,
+        isBoolean: true,
+        toBoolean: true
     }
 };
 
