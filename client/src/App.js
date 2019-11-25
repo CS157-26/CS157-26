@@ -10,7 +10,8 @@ import { withStyles, Grid } from "@material-ui/core";
 import Landing from "./components/landing/Landing";
 import Registration from "./components/registration/Registration";
 import Login from "./components/login/Login";
-import LoginAttempts from "./components/login/LoginAttempts"
+import LoginAttempts from "./components/login/LoginAttempts";
+import AnalyticsDashboard from "./components/analytics/Analytics";
 
 import TeamCreation from "./components/teams/TeamCreation";
 
@@ -60,6 +61,7 @@ class App extends Component {
                 <Route exact path="/registration" component={Registration} />
                 <Route exact path="/login" component={Login} />
                 <PrivateRoute exact path="/loginattempts" component={LoginAttempts} />
+                <PrivateRoute exact path="/analytics" component={AnalyticsDashboard} />
                 <PrivateRoute exact path="/teamcreation" component={TeamCreation} />>
               </Switch>
             </Grid>
