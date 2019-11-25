@@ -3,35 +3,18 @@ const createTicketsValidation = {
         isInt: true,
         toInt: true
     },
-    category: {
-        isString: true,
-        toString: true,
-        isLength: {
-            options: {min: 1, max: undefined}
-        },
-        ltrim: true,
-        rtrim: true,
-        escape: true
+    item_id: {
+        isInt: true,
+        toInt: true
     },
-    type: {
+    title: {
         isString: true,
         toString: true,
         isLength: {
-            options: {min: 1, max: undefined}
+            options: {ming: 1, max: undefined}
         },
         ltrim: true,
-        rtrim: true,
-        escape: true
-    },
-    item: {
-        isString: true,
-        toString: true,
-        isLength: {
-            options: {min: 1, max: undefined}
-        },
-        ltrim: true,
-        rtrim: true,
-        escape: true
+        rtrim: true
     },
     content_text: {
         isString: true,
@@ -41,7 +24,6 @@ const createTicketsValidation = {
         },
         ltrim: true,
         rtrim: true,
-        escape: true
     },
     priority: {
         isInt: true,

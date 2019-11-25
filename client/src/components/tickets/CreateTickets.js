@@ -2,9 +2,9 @@ import React, { Component } from 'react'
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
-import { createTicket } from "../../actions/ticketActions";
+import { createTicket, fetchCategories, fetchTypes, fetchItems, clearReducer } from "../../actions/ticketActions";
 
-import { withStyles, Card, CardContent, Grid, TextField, InputLabel, Select, MenuItem, Button, Typography, FormControl, FormHelperText } from "@material-ui/core";
+import { withStyles, Card, CardContent, Grid, TextField, InputLabel, Select, MenuItem, Button, Typography, FormControl, FormHelperText, CircularProgress } from "@material-ui/core";
 
 const styles = theme => ({
     cardSize: {
@@ -28,12 +28,12 @@ class CreateTickets extends Component {
         super();
 
         this.state = {
-            category: "",
-            type: "",
-            item: "",
+            category_id: null,
+            type_id: null,
+            item_id: null,
             title: "",
             contentText: "",
-            priority: 0,
+            priority: null,
             inputValidation: {
                 categoryError: " ",
                 typeError: " ",
@@ -45,14 +45,52 @@ class CreateTickets extends Component {
         };
 
         this.handleTextChange = this.handleTextChange.bind(this);
+        this.handleCTIChange = this.handleCTIChange.bind(this);
         this.handleSelectChange = this.handleSelectChange.bind(this);
         this.validateInput = this.validateInput.bind(this);
         this.cancelSubmision = this.cancelSubmision.bind(this);
     }
 
-    componentDidMount = () => {}
+    componentDidMount = () => {
+        this.props.fetchCategories();
+    }
 
-    componentWillUnmount = () => {}
+    componentWillUnmount = () => {
+        this.props.clearReducer();
+    }
+
+    handleCTIChange = event => {
+        event.preventDefault();
+
+        switch(event.target.name) {
+            case "category_id": {
+                this.props.fetchTypes(event.target.value);
+                this.setState({
+                    ...this.state,
+                    category_id: event.target.value,
+                    type_id: null,
+                    item_id: null
+                });
+                break;
+            }
+            case "type_id": {
+                this.props.fetchItems(this.state.category_id, event.target.value);
+                this.setState({
+                    ...this.state,
+                    type_id: event.target.value,
+                    item_id: null
+                });
+                break;
+            }
+            default: {
+                this.setState({
+                    ...this.state,
+                    [event.target.name]: event.target.value
+                });
+                break;
+            }
+        }
+    }
 
     handleTextChange = event => {
         event.preventDefault();
@@ -72,7 +110,7 @@ class CreateTickets extends Component {
 
     validateInput = event => {
         event.preventDefault();
-        const {category, type, item, title, contentText, priority} = this.state;
+        const {category_id, type_id, item_id, title, contentText, priority} = this.state;
 
         let inputValidation = {
             categoryError: " ",
@@ -83,15 +121,15 @@ class CreateTickets extends Component {
             priorityError: " "
         };
         
-        if (category.trim().length === 0) {
+        if (category_id === null) {
             inputValidation.categoryError = "Category field must not be empty";
         }
         
-        if (type.trim().length === 0) {
+        if (type_id === null) {
             inputValidation.typeError = "Type field must not be empty";
         }
 
-        if (item.trim().length === 0) {
+        if (item_id === null) {
             inputValidation.itemError = "Item field must not be empty";
         }
 
@@ -103,7 +141,7 @@ class CreateTickets extends Component {
             inputValidation.contentTextError = "Description must not be empty";
         }
         
-        if (!priority && priority === 0) {
+        if (priority === null) {
             inputValidation.priorityError = "Please choose a priority level (1-5)";
         }
 
@@ -118,12 +156,8 @@ class CreateTickets extends Component {
         }
         
         if (noErrors(inputValidation) === true) {
-            // I don't know what to do with category and type.
-
             const newTicket = {
-                category: category,
-                type: type,
-                item: type,
+                item_id: item_id,
                 author_id: this.props.auth.user.id,
                 title: title,
                 content_text: contentText,
@@ -144,8 +178,42 @@ class CreateTickets extends Component {
     }
     
     render() {
-        const {classes} = this.props;
+        const {classes, tickets} = this.props;
         const {categoryError, typeError, itemError, titleError, contentTextError, priorityError} = this.state.inputValidation;
+
+        let categoriesMarkup = <MenuItem></MenuItem>;
+        let typesMarkup = <MenuItem></MenuItem>;
+        let itemsMarkup = <MenuItem></MenuItem>;
+
+        if (tickets && tickets.loadingCategories === true) {
+            categoriesMarkup = <CircularProgress/>
+        } else if (tickets && tickets.categoriesSelection.length > 0) {
+            categoriesMarkup = tickets.categoriesSelection.map(category => {
+                return (
+                    <MenuItem key={category.category_id} value={category.category_id}>{category.name}</MenuItem>
+                );
+            });
+        }
+
+        if (tickets && tickets.loadingTypes === true) {
+            typesMarkup = <CircularProgress/>
+        } else if (tickets) {
+            typesMarkup = tickets.typesSelection.map(type => {
+                return (
+                    <MenuItem key={type.type_id} value={type.type_id}>{type.name}</MenuItem>
+                );
+            });
+        }
+
+        if (tickets && tickets.loadingItems === true) {
+            itemsMarkup = <CircularProgress/>
+        } else if (tickets) {
+            itemsMarkup = tickets.itemsSelection.map(item => {
+                return (
+                    <MenuItem key={item.item_id} value={item.item_id}>{item.name}</MenuItem>
+                );
+            });
+        }
 
         return (
             <Card className={classes.cardSize}>
@@ -157,40 +225,43 @@ class CreateTickets extends Component {
                         <Grid item xs={12}>
                             <Grid container direction="row" alignItems="center" spacing={2}>
                                 <Grid item xs={8} sm={4}>
-                                    <TextField 
-                                        variant="outlined"
-                                        label="Category"
-                                        name="category"
-                                        error={categoryError.trim().length > 0 ? true : false}
-                                        helperText={categoryError}
-                                        required
-                                        onChange={this.handleTextChange}
-                                        className={classes.w100}
-                                    />
+                                    <FormControl required error={categoryError.trim().length > 0 ? true : false} className={classes.w100}>
+                                        <InputLabel id="category">Category</InputLabel>
+                                        <Select
+                                            name="category_id"
+                                            value={this.state.category_id}
+                                            onChange={this.handleCTIChange}
+                                        >
+                                            {categoriesMarkup}
+                                        </Select>
+                                        <FormHelperText>{categoryError}</FormHelperText>
+                                    </FormControl>
                                 </Grid>
                                 <Grid item xs={8} sm={4}>
-                                    <TextField 
-                                        variant="outlined"
-                                        label="Type"
-                                        name="type"
-                                        error={typeError.trim().length > 0 ? true : false}
-                                        helperText={typeError}
-                                        required
-                                        onChange={this.handleTextChange}
-                                        className={classes.w100}
-                                    />
+                                    <FormControl required error={typeError.trim().length > 0 ? true : false} disabled={this.state.category_id === null ? true : false} className={classes.w100}>
+                                        <InputLabel id="type">Type</InputLabel>
+                                        <Select
+                                            name="type_id"
+                                            value={this.state.type_id}
+                                            onChange={this.handleCTIChange}
+                                        >
+                                            {typesMarkup}
+                                        </Select>
+                                        <FormHelperText>{typeError}</FormHelperText>
+                                    </FormControl>
                                 </Grid>
                                 <Grid item xs={8} sm={4}>
-                                    <TextField 
-                                        variant="outlined"
-                                        label="Item"
-                                        name="item"
-                                        error={itemError.trim().length > 0 ? true : false}
-                                        helperText={itemError}
-                                        required
-                                        onChange={this.handleTextChange}
-                                        className={classes.w100}
-                                    />
+                                    <FormControl required error={itemError.trim().length > 0 ? true : false} disabled={this.state.type_id === null ? true : false} className={classes.w100}>
+                                        <InputLabel id="item">Item</InputLabel>
+                                        <Select
+                                            name="item_id"
+                                            value={this.state.item_id}
+                                            onChange={this.handleCTIChange}
+                                        >
+                                            {itemsMarkup}
+                                        </Select>
+                                        <FormHelperText>{itemError}</FormHelperText>
+                                    </FormControl>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -224,7 +295,7 @@ class CreateTickets extends Component {
                             <Grid container direction="row" alignItems="center" spacing={4}>
                                 <Grid item xs={6} sm={4}>
                                     <FormControl required error={priorityError.trim().length > 0 ? true : false} className={classes.w100}>
-                                        <InputLabel id="priority">Priority</InputLabel>
+                                        <InputLabel>Priority</InputLabel>
                                         <Select
                                             name="priority"
                                             value={this.state.priority}
@@ -265,12 +336,17 @@ class CreateTickets extends Component {
 CreateTickets.propTypes = {
     auth: PropTypes.object.isRequired,
     errors: PropTypes.object.isRequired,
-    createTicket: PropTypes.func.isRequired
+    createTicket: PropTypes.func.isRequired,
+    fetchCategories: PropTypes.func.isRequired,
+    fetchTypes: PropTypes.func.isRequired,
+    fetchItems: PropTypes.func.isRequired,
+    clearReducer: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
     auth: state.auth,
+    tickets: state.tickets,
     errors: state.errors
 });
 
-export default connect(mapStateToProps, {createTicket})(withStyles(styles)(CreateTickets));
+export default connect(mapStateToProps, {createTicket, fetchCategories, fetchTypes, fetchItems, clearReducer})(withStyles(styles)(CreateTickets));

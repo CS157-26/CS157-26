@@ -4,7 +4,7 @@ const db = require("../../config/db");
 
 const { check, checkSchema, validationResult } = require("express-validator");
 const commentsValidator = require("../../validation/comments");
-const inputValidation = require("../../validation/tickets");
+const { createTicketsValidation } = require("../../validation/tickets");
 
 /*
 const passport = require("passport");
@@ -355,12 +355,34 @@ router.post("/comments", checkSchema(commentsValidator.fetchCommentsValidation),
             res.status(404).send({ msg: "Comments not found"});
         }
     });
-router.post("/create", checkSchema(inputValidation.createTicketsValidation), (req, res) => {
-    const errors = validationResult(req);
-    if (errors.isEmpty() === true) {
-        return res.status(200).send(req.body);
+});
+
+//  @route  POST /api/tickets/create
+//  @desc   Create new entries to categories, types, items, and tickets.
+//  @access Private
+//  @param  item_id:        The item_id that the ticket falls under
+//  @param  author_id:      The id of the user who made the ticket
+//  @param  title:          The title of the ticket
+//  @param  content_text:   The description of the ticket
+//  @param  priority:       The priority of the ticket
+router.post("/create", checkSchema(createTicketsValidation), (req, res) => {
+    const validationErrors = validationResult(req);
+    if (validationErrors.isEmpty() === true) {
+        let {item_id, author_id, title, content_text, priority} = req.body;
+
+        const ticketQuery = `
+            INSERT INTO tickets(item_id, author_id, title, content_text, current_status, priority, creation_date, modification_date, protected_status)
+            VALUES(${item_id}, ${author_id}, ${db.escape(title.toLowerCase())}, ${db.escape(content_text.toLowerCase())}, "PENDING", ${db.escape(priority)}, CURRENT_TIME, CURRENT_TIME, ${false})`;
+
+        db.query(ticketQuery, (err, rows, fields) => {
+            if (err) {
+                return res.status(500).send({error_msg: "Error: A database error occured"});
+            } else {
+                return res.status(200).send({msg: "Ticket submitted successfully!"});
+            }
+        });
     } else {
-        return res.status(500).send(errors);
+        return res.status(400).send({ error_msg: "Error: Bad request", ...validationErrors});
     }
 });
 
