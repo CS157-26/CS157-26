@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-
+import moment from "moment";
 import { connect } from "react-redux";
 
 import { withStyles, Grid, Typography, Card, CardContent, Container } from "@material-ui/core";
@@ -16,14 +16,16 @@ class AnalyticsDashboard extends Component {
 
     componentDidMount = () => {
         setInterval(100, ()=>{});
-        const { getAverageResolve, getOpenTickets } = this.props;
+        const { getAverageResolve, getOpenTickets, getTicketHistory, auth } = this.props;
         getOpenTickets();
         getAverageResolve();
+        let now = moment();
+        console.log(auth.user);
+        //getTicketHistory()
     }
 
     render() {
         const { classes, analytic } = this.props;
-        console.log(analytic.open_tickets_data);
         return (
         <Grid container justify="center" spacing={3}>
             <Grid item>
