@@ -13,6 +13,13 @@ import {
   withStyles
 } from "@material-ui/core";
 
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Chip from '@material-ui/core/Chip';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import PersonAddIcon from "@material-ui/icons/PersonAdd";
 import VisibilityIcon from "@material-ui/icons/Visibility";
 import VisibilityOffIcon from "@material-ui/icons/VisibilityOff";
@@ -32,7 +39,19 @@ const styles = theme => ({
   },
   textField: {
     width: "15em"
-  }
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+    maxWidth: 300,
+  },
+  chips: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 2,
+  },
 });
 
 function RegisterCard(props) {
@@ -42,6 +61,9 @@ function RegisterCard(props) {
     inputValidation,
     handleChange,
     validateInput,
+    availableTeams,
+    selectedTeams,
+    handleTeamChange,
     classes
   } = props;
 
@@ -61,6 +83,17 @@ function RegisterCard(props) {
   const handlePasswordVerifyVisibility = e => {
     e.preventDefault();
     props.toggleVisibility("passwordVerify");
+  };
+
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        width: 250,
+      },
+    },
   };
 
   return (
@@ -181,6 +214,33 @@ function RegisterCard(props) {
                     </IconButton>
                   </Grid>
                 </Grid>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl className={classes.formControl}>
+                  <InputLabel id="mutiple-chip-label">Teams</InputLabel>
+                  <Select
+                    labelid="mutiple-chip-label"
+                    id="mutiple-chip"
+                    multiple
+                    value={selectedTeams}
+                    onChange={handleTeamChange}
+                    input={<Input id="select-multiple-chip" />}
+                    renderValue={selected => (
+                      <div className={classes.chips}>
+                        {selected.map(value => (
+                          <Chip key={value.team_id} label={value.name} className={classes.chip} />
+                        ))}
+                      </div>
+                    )}
+                    MenuProps={MenuProps}
+                  >
+                    {availableTeams.map(type => (
+                      <MenuItem key={type.team_id} value={type}>
+                        {type.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               </Grid>
             </Grid>
           </Grid>
