@@ -52,13 +52,15 @@ function addUserAccount(username, email, password, teams, res) {
         } else {
             const newID = result.insertId;
             teams.map(team => {
-                const teamQuery = "INSERT INTO teamMembers VALUES (" + newID + ", " + team + ")";
-                console.log(teamQuery);
-                db.query(teamQuery, (err) => {
-                    if (err) {
-                        console.log(err);
-                    }
-                })
+                if (team != "") {
+                    const teamQuery = "INSERT INTO teamMembers VALUES (" + newID + ", " + team + ")";
+                    console.log(teamQuery);
+                    db.query(teamQuery, (err) => {
+                        if (err) {
+                            console.log(err);
+                        }
+                    })
+                }
 
             })
             res.status(200).send("success");
