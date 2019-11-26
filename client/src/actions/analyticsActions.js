@@ -16,11 +16,12 @@ export const getOpenTickets = () => dispatch => {
         type: GET_ERRORS,
         payload: err.response.data
       });
-    });
+    })
 };
 
 // Retrieve Average Resolve time by Team
 export const getAverageResolve = () => dispatch => {
+    
     axios
       .get("/api/analytics/avgCloseTime")
       .then(res => {
@@ -34,11 +35,11 @@ export const getAverageResolve = () => dispatch => {
           type: GET_ERRORS,
           payload: err.response.data
         });
-      });
+      })
   };
 
   // Retrieve team open ticket history
-  export const getAverageResolve = (_team_id, _start, _end, _step) => dispatch => {
+  export const getTicketHistory = (_team_id, _start, _end, _step) => dispatch => {
     axios
       .get("/api/analytics/ticketsOverTime", {team_id:_team_id, start:_start, end:_end, step:_step})
       .then(res => {
