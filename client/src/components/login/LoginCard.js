@@ -131,7 +131,7 @@ function LoginCard(props) {
               Don't have an account?{" "}
               <span>
                 <Link to="/registration" className={classes.link}>
-                  Sign in
+                  Register
                 </Link>
               </span>
             </Typography>

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { registerUser } from "../../actions/registrationActions";
+import axios from "axios";
 
 import RegisterCard from "./RegisterCard";
 
@@ -34,6 +35,8 @@ class Registration extends Component {
       passwordVerifyField: "",
       passwordVisible: false,
       passwordVerifyVisible: false,
+      availableTeams: [],
+      selectedTeams: [],
       inputValidation: {
         emailField: "",
         usernameField: "",
@@ -45,6 +48,7 @@ class Registration extends Component {
     this.toggleVisibility = this.toggleVisibility.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.validateInput = this.validateInput.bind(this);
+    this.handleTeamChange = this.handleTeamChange.bind(this);
   }
 
   handleChange = e => {
@@ -54,6 +58,14 @@ class Registration extends Component {
       [e.target.name]: e.target.value
     });
   };
+
+  handleTeamChange = e => {
+    e.preventDefault();
+    this.setState({
+      ...this.state,
+      selectedTeams: e.target.value
+    })
+  }
 
   toggleVisibility = field => {
     if (field === "password") {
@@ -119,10 +131,15 @@ class Registration extends Component {
       validationResults.passwordField === "" &&
       validationResults.passwordVerifyField === ""
     ) {
+      const teams = this.state.selectedTeams.map(team => {
+        return team.team_id;
+      })
+      console.log(teams);
       const newUser = {
         email: this.state.emailField,
         username: this.state.usernameField,
-        password: this.state.passwordField
+        password: this.state.passwordField,
+        teams: teams.join(",")
       };
       this.props.registerUser(newUser, this.props.history);
     }
@@ -132,6 +149,19 @@ class Registration extends Component {
       inputValidation: validationResults
     });
   };
+
+  componentDidMount() {
+    axios.get("/api/teamcreation/currentteams")
+      .then(res => {
+        this.setState({
+          ...this.state,
+          availableTeams: res.data
+        })
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
 
   render() {
     const { classes } = this.props;
@@ -155,6 +185,9 @@ class Registration extends Component {
             toggleVisibility={this.toggleVisibility}
             handleChange={this.handleChange}
             validateInput={this.validateInput}
+            availableTeams={this.state.availableTeams}
+            selectedTeams={this.state.selectedTeams}
+            handleTeamChange={this.handleTeamChange}
           />
         </Grid>
       </Grid>
