@@ -34,19 +34,37 @@ router.post('/', (req, res) => {
             }
 
             if (passwordMatch) {
-                const payload = {
-                    id: userAccount.user_id,
-                    username: userAccount.username
-                };
-
-                req.login(payload, { session: false }, (error) => {
-                    if (error) {
-                        return res.status(400).send({ error });
+                const teamQuery = `SELECT teams.* FROM users JOIN teammembers USING(user_id) JOIN teams USING(team_id) WHERE users.user_id=${userAccount.user_id}`;
+                db.query(teamQuery, (err, rows, fields) => {
+                    if (err) {
+                        return res.status(500).send(err);
                     }
 
-                    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2 days' });
-                    return res.json({ success: true, token: "bearer " + token });
-                })
+                    let parsedRowData = [];
+                    if (rows.length > 0) {
+                        for (let i = 0; i < rows.length; i++) {
+                            parsedRowData[i] = {
+                                team_id: rows[i].team_id,
+                                name: rows[i].name
+                            };
+                        }
+                    }
+
+                    const payload = {
+                        id: userAccount.user_id,
+                        username: userAccount.username,
+                        teams: parsedRowData
+                    };
+    
+                    req.login(payload, { session: false }, (error) => {
+                        if (error) {
+                            return res.status(400).send({ error });
+                        }
+    
+                        const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '2 days' });
+                        return res.json({ success: true, token: "bearer " + token });
+                    })
+                });
             }
         } else {
             return res.status(400).json({ error: "invalid username / password" });

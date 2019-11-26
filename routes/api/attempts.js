@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
     const query = "SELECT * FROM login_attempts WHERE user_id = " + user_id;
     db.query(query, (err, rows) => {
         if (err) {
-            res.status(500).json({ msg: "Error: unable to retreive login attempts" });
+            res.status(500).json({ msg: "Error: unable to retrieve login attempts" });
         } else {
             if (!rows) {
                 res.status(500).json({ msg: "Error: no login attempts found. Please contact administrator" });

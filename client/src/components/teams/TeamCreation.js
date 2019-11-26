@@ -109,7 +109,7 @@ export default function TeamCreation() {
     const [existingData, setExistingData] = React.useState(fakeData);
 
     React.useEffect(() => {
-        axios.get("/api/teams/data")
+        axios.get("/api/teamcreation/current")
             .then(res => setExistingData(res.data))
             .catch((err) => {
                 console.log(err);
@@ -130,7 +130,6 @@ export default function TeamCreation() {
             error = "That team name already exists"
         }
         setTeamNameError(error);
-
     }
 
     const handleTextChange = event => {
@@ -142,14 +141,22 @@ export default function TeamCreation() {
         event.preventDefault();
         const teamNameError = validateTeamName(teamName);
         const numTypes = typeValue.length;
-        if (numTypes > 0 && teamNameError === "") {
+        if (numTypes > 0 && !teamNameError) {
+            const finalTypes = typeValue.map(type => {
+                return type.value;
+            })
             const result = {
                 name: teamName,
-                types: typeValue.map(type => {
-                    return type.value;
-                })
+                types: finalTypes.join(", ")
             }
-            console.log(result);
+            axios.post("/api/teamcreation/create", result)
+                .then(res => {
+                    console.log(res.data);
+                })
+                .catch(err => {
+                    console.log(err);
+                }
+                );
         }
     }
 
@@ -211,15 +218,15 @@ export default function TeamCreation() {
                                                     renderValue={selected => (
                                                         <div className={classes.chips}>
                                                             {selected.map(value => (
-                                                                <Chip key={value.value} label={value.name} className={classes.chip} />
+                                                                <Chip key={value.value} label={value.label} className={classes.chip} />
                                                             ))}
                                                         </div>
                                                     )}
                                                     MenuProps={MenuProps}
                                                 >
                                                     {existingData.types.map(type => (
-                                                        <MenuItem key={type.value} value={type} style={getStyles(type.name, typeValue, theme)}>
-                                                            {type.name}
+                                                        <MenuItem key={type.value} value={type} style={getStyles(type.label, typeValue, theme)}>
+                                                            {type.label}
                                                         </MenuItem>
                                                     ))}
                                                 </Select>
@@ -245,7 +252,7 @@ export default function TeamCreation() {
                                         variant="contained"
                                         color="primary"
                                         onClick={handleSubmit}
-                                        disabled={(typeValue < 1) || (teamName.length < 5)}
+                                        disabled={(typeValue < 1) || (teamName.length < 6) || (teamNameError.length > 1)}
                                     >
                                         CREATE TEAM
                                 </Button>
