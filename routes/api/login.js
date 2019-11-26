@@ -48,8 +48,9 @@ router.post('/', (req, res) => {
                     return res.json({ success: true, token: "bearer " + token });
                 })
             }
+        } else {
+            return res.status(400).json({ error: "invalid username / password" });
         }
-        return res.status(400).json({ error: "invalid username / password" });
     });
 });
 

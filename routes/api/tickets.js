@@ -109,39 +109,30 @@ async function getTicketAssignees(ticket_id)
  * @param {string} team_id Id of the team associated with the tickets.
  * @return {string} A string containing the query generated.
  */
-function buildTicketFilter(user_id, team_id)
-{
-    var strA = [
-        `SELECT DISTINCT ticket.ticket_id, ticket.item_id, ticket.author_id, ticket.title, ticket.current_status,
-        ticket.priority, ticket.creation_date, ticket.modification_date, ticket.protected_status,
-        item.name AS item_name, type.name AS type_name, category.name AS category_name
-        FROM tickets ticket
-        JOIN items item ON item.item_id = ticket.item_id
-        JOIN types type ON type.type_id = item.type_id
-        JOIN categories category ON category.category_id = type.category_id
-        JOIN userassignment assignees ON assignees.ticket_id = ticket.ticket_id`
-    ]
-    if ((user_id && user_id != "") || (team_id && team_id != "")) {
-        strA[1] = " WHERE";
-        var i = 2;
-        if (user_id && user_id != "") {
-            strA[i] = " assignees.user_id = ";
-            strA[i+1] = user_id;
-            strA[i+2] = " OR ";
-            strA[i+3] = " ticket.author_id = ";
-            strA[i+4] = user_id;
-            i = i + 5;
-            if (team_id && team_id != "") {
-                strA[i] = " AND";
-                i = i + 1;
-            }
-        }
-        if (team_id && team_id != "") {
-            strA[i+2] = " type.team_id = ";
-            strA[i+1] = team_id;
+const buildTicketFilter = (user_id, team_id) => {
+    let filter = "";
+    if (user_id) {
+        filter = `WHERE assignees.user_id = ${user_id} OR ticket.author_id = ${user_id}`;
+    }
+    if (team_id) {
+        if (filter.length == 0) {
+            filter = `WHERE type.team_id = ${team_id}`;
+        } else {
+            filter += ` AND type.team_id = ${team_id}`;
         }
     }
-    return strA.join("");
+
+    const query = `SELECT DISTINCT ticket.ticket_id, ticket.item_id, ticket.title, ticket.current_status,
+    ticket.priority, ticket.creation_date, ticket.modification_date, ticket.protected_status,
+    item.name AS item_name, type.name AS type_name, category.name AS category_name, user.username AS author_name
+    FROM tickets ticket
+    JOIN users user ON user.user_id = ticket.author_id
+    JOIN items item ON item.item_id = ticket.item_id
+    JOIN types type ON type.type_id = item.type_id
+    JOIN categories category ON category.category_id = type.category_id
+    JOIN userassignment assignees ON assignees.ticket_id = ticket.ticket_id ${filter}`;
+
+    return query;
 }
 
 /**
@@ -184,7 +175,7 @@ async function buildDetailsDoc(ticketDetails, ticket_id, res)
 // @desc    Returns a ticket
 // @param ticket_id - the id of the ticket with the details
 // @access  Private
-router.get("/details",
+router.post("/details",
     //passport.authenticate('jwt', {session: false}),
     [
         check('ticket_id').exists()
@@ -194,19 +185,20 @@ router.get("/details",
         if (!validationError.isEmpty()) {
             return res
             .status(400)
-            .json({msg:"Bad Request: A ticket_id must be provided."});
+            .send({msg:"Bad Request: A ticket_id must be provided."});
         }
 
         const {ticket_id} = req.body;
 
         db.query(
-       `SELECT ticket.*, item.name AS "item_name", type.name AS "type_name",
-        category.name AS "category_name"
-        FROM tickets ticket
-        JOIN items item ON item.item_id = ticket.item_id
-        JOIN types type ON type.type_id = item.type_id
-        JOIN categories category ON category.category_id = type.category_id
-        WHERE ticket.ticket_id = ?`, [ticket_id],
+       `SELECT ticket.*, author.username as "author_name", item.name AS "item_name", type.name AS "type_name",
+       category.name AS "category_name"
+       FROM tickets ticket
+       JOIN items item ON item.item_id = ticket.item_id
+       JOIN types type ON type.type_id = item.type_id
+       JOIN categories category ON category.category_id = type.category_id
+       JOIN users author ON ticket.author_id = author.user_id
+       WHERE ticket.ticket_id = ?`, [ticket_id],
         (err, rows, fields) => {
             if (err) {
                 res.status(500).json({msg:"Error: There was an issue retreiving the ticket."});
@@ -223,10 +215,10 @@ router.get("/details",
 
 // @route   GET api/tickets/overview
 // @desc    Returns a list of ticket overview info
-// @param user_id - Specifies the user we want to retrieve tickets for
-// @param team_id - Specifies the team we want to retrieve tickets for
+// @param   user_id - Specifies the user we want to retrieve tickets for
+// @param   team_id - Specifies the team we want to retrieve tickets for
 // @access  Private
-router.get("/overview",
+router.post("/overview",
     //passport.authenticate('jwt', {session: false}),
     [
     ],
@@ -245,7 +237,7 @@ router.get("/overview",
                 if (err) {
                     res
                     .status(500)
-                    .json({msg:"Error: There was an issue retreving the requested tickets", error:err});
+                    .json({msg:"Error: There was an issue retrieving the requested tickets", error:err});
                 } else {
                     res
                     .status(200)

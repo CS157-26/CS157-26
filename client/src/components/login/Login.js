@@ -75,7 +75,7 @@ class Login extends Component {
         email: this.state.emailField,
         password: this.state.passwordField
       };
-      this.props.loginUser(newUser);
+      this.props.loginUser(newUser, this.props.history);
     }
 
     this.setState({
