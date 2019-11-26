@@ -6,8 +6,8 @@ import {
 } from "../actions/types";
 
 const initialState = {
-    open_tickets_data: {},
-    avg_resolve_data: {},
+    open_tickets_data: [],
+    avg_resolve_data: [],
     ticket_history: {},
     errors: {}
 };
