@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { check , validationResult } = require("express-validator");
+const { check , validationResult, query } = require("express-validator");
 const db = require("../../config/db");
 const moment = require("moment");
 
@@ -197,10 +197,10 @@ router.get("/avgCloseTime",
 router.get("/ticketsOverTime",
     //passport.authenticate('jwt', {session: false}),
     [
-        check('team_id').exists(),
-        check('start').exists(),
-        check('end').exists(),
-        check('step').isNumeric()
+        query('team_id').exists(),
+        query('start').exists(),
+        query('end').exists(),
+        query('step').isNumeric()
     ],
     async (req, res) => {
     let validationErr = validationResult(req);
@@ -211,7 +211,7 @@ router.get("/ticketsOverTime",
             .status(400)
             .json({msg:"Bad Request: please specify a valid team_id, start date, end date, and step."});
     }
-    var {team_id, start, end, step} = req.body;
+    var {team_id, start, end, step} = req.query;
     try {
         const result = await ticketsOverTime(team_id, start, end, step);
         return res

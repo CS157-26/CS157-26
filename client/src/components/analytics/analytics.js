@@ -16,12 +16,14 @@ class AnalyticsDashboard extends Component {
 
     componentDidMount = () => {
         setInterval(100, ()=>{});
-        const { getAverageResolve, getOpenTickets, getTicketHistory, auth, analytic } = this.props;
+        const { getAverageResolve, getOpenTickets, getTicketHistory, auth } = this.props;
         getOpenTickets();
         getAverageResolve();
-        let now = moment();
-        console.log(auth.user);
-        //getTicketHistory()
+        let team_id = auth.user.teams[0].team_id;
+        let now = moment().format('YYYY-MM-DD hh:mm:ss');
+        let before = moment().subtract(1, 'week').format('YYYY-MM-DD hh:mm:ss');
+        let step = 12;
+        getTicketHistory(team_id, before, now, step);
     }
 
     render() {
@@ -90,6 +92,16 @@ class AnalyticsDashboard extends Component {
                 <Card>
                     <CardContent>
                         <p>Open Ticket History for a Team -Line Plot-</p>
+                        <Chart 
+                            width={'500px'}
+                            height={'300px'}
+                            chartType="LineChart"
+                            data={[[]]/*[['time', 'Tickets'].concat(
+                                analytic.ticket_history.values.map(
+                                    entry=>{return [entry.index, entry.val[0].open_count]}
+                                )
+                                )]*/}
+                        />
                     </CardContent>
                 </Card>
             </Grid>

@@ -41,7 +41,7 @@ export const getAverageResolve = () => dispatch => {
   // Retrieve team open ticket history
   export const getTicketHistory = (_team_id, _start, _end, _step) => dispatch => {
     axios
-      .get("/api/analytics/ticketsOverTime", {team_id:_team_id, start:_start, end:_end, step:_step})
+      .get("/api/analytics/ticketsOverTime", {params:{team_id:_team_id, start:_start, end:_end, step:_step}})
       .then(res => {
           dispatch({
               type: GET_ANALYTICS_TEAM_HISTORY,
