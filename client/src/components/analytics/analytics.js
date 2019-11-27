@@ -33,7 +33,6 @@ class AnalyticsDashboard extends Component {
             <Grid item>
                 <Card>
                     <CardContent>
-                        <p>Open Tickets By Team -Bar Chart-</p>
                         {analytic.open_tickets_data_loaded &&
                         <Chart 
                             width={'500px'}
@@ -63,7 +62,6 @@ class AnalyticsDashboard extends Component {
             <Grid item>
                 <Card>
                     <CardContent>
-                        <p>Average Resoltion Time -Bar Chart-</p>
                         {analytic.avg_resolve_data_loaded &&
                         <Chart 
                             width={'500px'}
@@ -93,7 +91,6 @@ class AnalyticsDashboard extends Component {
             <Grid item>
                 <Card>
                     <CardContent>
-                        <p>Open Ticket History for a Team -Line Plot-</p>
                         {analytic.ticket_history_loaded &&
                         <Chart 
                             width={'500px'}
