@@ -13,7 +13,7 @@ class AnalyticsDashboard extends Component {
         super();
         this.state = {};
     }
-
+666666666
     componentDidMount = () => {
         setInterval(100, ()=>{});
         const { getAverageResolve, getOpenTickets, getTicketHistory, auth } = this.props;
@@ -34,6 +34,7 @@ class AnalyticsDashboard extends Component {
                 <Card>
                     <CardContent>
                         <p>Open Tickets By Team -Bar Chart-</p>
+                        {analytic.open_tickets_data_loaded &&
                         <Chart 
                             width={'500px'}
                             height={'300px'}
@@ -55,7 +56,7 @@ class AnalyticsDashboard extends Component {
                                 },
                             }}
                             rootProps={{'data-testid':1}}
-                                  />
+                                  />}
                     </CardContent>
                 </Card>
             </Grid>
@@ -63,6 +64,7 @@ class AnalyticsDashboard extends Component {
                 <Card>
                     <CardContent>
                         <p>Average Resoltion Time -Bar Chart-</p>
+                        {analytic.avg_resolve_data_loaded &&
                         <Chart 
                             width={'500px'}
                             height={'300px'}
@@ -84,7 +86,7 @@ class AnalyticsDashboard extends Component {
                                 },
                             }}
                             rootProps={{'data-testid':1}}
-                                  />
+                                  />}
                     </CardContent>
                 </Card>
             </Grid>
@@ -92,16 +94,16 @@ class AnalyticsDashboard extends Component {
                 <Card>
                     <CardContent>
                         <p>Open Ticket History for a Team -Line Plot-</p>
+                        {analytic.ticket_history_loaded &&
                         <Chart 
                             width={'500px'}
                             height={'300px'}
                             chartType="LineChart"
-                            data={[[]]/*[['time', 'Tickets'].concat(
+                            data={[['time', 'Tickets']].concat(
                                 analytic.ticket_history.values.map(
                                     entry=>{return [entry.index, entry.val[0].open_count]}
-                                )
-                                )]*/}
-                        />
+                                ))}
+                        />}
                     </CardContent>
                 </Card>
             </Grid>

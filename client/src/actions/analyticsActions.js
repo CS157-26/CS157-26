@@ -1,8 +1,9 @@
 import axios from "axios";
-import { GET_ERRORS, GET_ANALYTICS_OPEN_TICKETS, GET_ANALYTICS_AVG_RESOLVE, GET_ANALYTICS_TEAM_HISTORY } from "./types";
+import { GET_ERRORS, LOADING_DATA, GET_ANALYTICS_OPEN_TICKETS, GET_ANALYTICS_AVG_RESOLVE, GET_ANALYTICS_TEAM_HISTORY } from "./types";
 
 // Retrieve Open Tickets by Team
 export const getOpenTickets = () => dispatch => {
+  dispatch({type: LOADING_DATA, payload: {dataGot: GET_ANALYTICS_OPEN_TICKETS}});
   axios
     .get("/api/analytics/openTicketsByTeam")
     .then(res => {
@@ -21,7 +22,7 @@ export const getOpenTickets = () => dispatch => {
 
 // Retrieve Average Resolve time by Team
 export const getAverageResolve = () => dispatch => {
-    
+    dispatch({type: LOADING_DATA, payload: {dataGot: GET_ANALYTICS_AVG_RESOLVE}});
     axios
       .get("/api/analytics/avgCloseTime")
       .then(res => {
@@ -30,7 +31,7 @@ export const getAverageResolve = () => dispatch => {
               payload: res.data
           });
       })
-      .catch(err => {
+      .catch(err => {66
         dispatch({
           type: GET_ERRORS,
           payload: err.response.data
@@ -40,6 +41,7 @@ export const getAverageResolve = () => dispatch => {
 
   // Retrieve team open ticket history
   export const getTicketHistory = (_team_id, _start, _end, _step) => dispatch => {
+    dispatch({type: LOADING_DATA, payload: {dataGot: GET_ANALYTICS_TEAM_HISTORY}});
     axios
       .get("/api/analytics/ticketsOverTime", {params:{team_id:_team_id, start:_start, end:_end, step:_step}})
       .then(res => {
