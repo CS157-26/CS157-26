@@ -13,7 +13,7 @@ class AnalyticsDashboard extends Component {
         super();
         this.state = {};
     }
-666666666
+
     componentDidMount = () => {
         setInterval(100, ()=>{});
         const { getAverageResolve, getOpenTickets, getTicketHistory, auth } = this.props;
