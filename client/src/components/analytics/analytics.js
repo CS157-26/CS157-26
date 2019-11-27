@@ -99,10 +99,22 @@ class AnalyticsDashboard extends Component {
                             width={'500px'}
                             height={'300px'}
                             chartType="LineChart"
-                            data={[['time', 'Tickets']].concat(
+                            data={[[{type: 'date', label:'Time'},
+                                    'Tickets']]
+                            .concat(
                                 analytic.ticket_history.values.map(
-                                    entry=>{return [entry.index, entry.val[0].open_count]}
+                                    entry=>{let date = moment(entry.date); return [new Date(date.year(), date.month(), date.date(), date.hour(), date.minute()), entry.val[0].open_count];}
                                 ))}
+                            options={{
+                                title: 'Ticket History for Team '+analytic.ticket_history.team_id, // need to add the actual team name to the api
+                                chartArea: {width: '100%'},
+                                hAxis: {
+                                    title: 'Days',
+                                },
+                                vAxis: {
+                                    title: 'Tickets Open',
+                                },
+                            }}
                         />}
                     </CardContent>
                 </Card>
