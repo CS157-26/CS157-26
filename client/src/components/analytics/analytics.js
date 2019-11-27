@@ -21,8 +21,8 @@ class AnalyticsDashboard extends Component {
         getAverageResolve();
         let team_id = auth.user.teams[0].team_id;
         let now = moment().format('YYYY-MM-DD hh:mm:ss');
-        let before = moment().subtract(1, 'week').format('YYYY-MM-DD hh:mm:ss');
-        let step = 12;
+        let before = moment().subtract(1, 'year').format('YYYY-MM-DD hh:mm:ss');
+        let step = 24;
         getTicketHistory(team_id, before, now, step);
     }
 
