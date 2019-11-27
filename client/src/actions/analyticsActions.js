@@ -31,7 +31,7 @@ export const getAverageResolve = () => dispatch => {
               payload: res.data
           });
       })
-      .catch(err => {66
+      .catch(err => {
         dispatch({
           type: GET_ERRORS,
           payload: err.response.data
