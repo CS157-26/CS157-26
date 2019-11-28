@@ -11,7 +11,7 @@ const styles = theme=>({});
 class AnalyticsDashboard extends Component {
     constructor() {
         super();
-        this.state = {};
+        this.state = {ticket_history_teamid: -1};
     }
     componentDidMount = () => {
         setInterval(100, ()=>{});
@@ -19,9 +19,10 @@ class AnalyticsDashboard extends Component {
         getOpenTickets();
         getAverageResolve();
         let team_id = auth.user.teams[0].team_id;
+        this.state.ticket_history_teamid = team_id;
         let now = moment().format('YYYY-MM-DD hh:mm:ss');
         let before = moment().subtract(1, 'year').format('YYYY-MM-DD hh:mm:ss');
-        let step = 24;
+        let step = 12;
         getTicketHistory(team_id, before, now, step);
     }
     buildTeamSelect() {
@@ -33,13 +34,19 @@ class AnalyticsDashboard extends Component {
         return (items)
     }
     retrieveTicketHistory = (e) => {
-        console.log(e.target.value)
         const {getTicketHistory} = this.props;
         let team_id = e.target.value;
+        this.state.ticket_history_teamid = team_id;
         let now = moment().format('YYYY-MM-DD hh:mm:ss');
         let before = moment().subtract(1, 'year').format('YYYY-MM-DD hh:mm:ss');
         let step = 24;
         getTicketHistory(team_id, before, now, step);
+    }
+    adjustGraphResolution = (e) => {
+        const {getTicketHistory} = this.props;
+        let team_id = this.state.ticket_history_teamid;
+        // calculate the min and max range by the zoom range
+        // get a new ticket history and update the graph
     }
     render() {
         const { classes, analytic, auth } = this.props;
@@ -134,6 +141,10 @@ class AnalyticsDashboard extends Component {
                                 },
                                 vAxis: {
                                     title: 'Tickets Open',
+                                },
+                                explorer: {
+                                    maxZoomOut: 2,
+                                    keepInBounds: true,
                                 },
                             }}
                             rootProps={{'data-testid':1}}
