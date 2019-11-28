@@ -28,7 +28,7 @@ class AnalyticsDashboard extends Component {
         const { auth } = this.props;
         
         const items = auth.user.teams.map(team_data => {
-        return <MenuItem value={team_data.team_id}>{team_data.name}</MenuItem>
+        return <MenuItem key={team_data.team_id} value={team_data.team_id}>{team_data.name}</MenuItem>
         });
         return (items)
     }
@@ -106,13 +106,15 @@ class AnalyticsDashboard extends Component {
             <Grid item>
                 <Card>
                     <CardContent>
-                        <InputLabel id="team_select_label">Team</InputLabel>
-                        <Select labelId='team_select_label'
+                        {(auth.user.teams.length > 0) && 
+                        <InputLabel id="team_select_label">Team</InputLabel>}
+                        {(auth.user.teams.length > 0) && 
+                        <Select 
                                 id='team_history_select'
                                 value={auth.user.teams[0].team_id}
                                 onChange={this.retrieveTicketHistory}>
                             {this.buildTeamSelect()}
-                        </Select>
+                        </Select>}
                         {analytic.ticket_history_loaded &&
                         <Chart 
                             width={'500px'}
@@ -134,13 +136,13 @@ class AnalyticsDashboard extends Component {
                                     title: 'Tickets Open',
                                 },
                             }}
+                            rootProps={{'data-testid':1}}
                             chartPackages={['corechart', 'controls']}
                         />}
                     </CardContent>
                 </Card>
             </Grid>
         </Grid>
-        
         );
     }
 }
