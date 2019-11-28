@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import moment from "moment";
 import { connect } from "react-redux";
 import {Chart} from 'react-google-charts';
-import { withStyles, Grid, Typography, Card, CardContent, Container } from "@material-ui/core";
+import { withStyles, Grid, Typography, Card, CardContent, Container, Select, MenuItem, InputLabel } from "@material-ui/core";
 import { getAverageResolve, getOpenTickets, getTicketHistory } from "../../actions/analyticsActions";
 
 const styles = theme=>({});
@@ -13,7 +13,6 @@ class AnalyticsDashboard extends Component {
         super();
         this.state = {};
     }
-
     componentDidMount = () => {
         setInterval(100, ()=>{});
         const { getAverageResolve, getOpenTickets, getTicketHistory, auth } = this.props;
@@ -25,9 +24,25 @@ class AnalyticsDashboard extends Component {
         let step = 24;
         getTicketHistory(team_id, before, now, step);
     }
-
+    buildTeamSelect() {
+        const { auth } = this.props;
+        
+        const items = auth.user.teams.map(team_data => {
+        return <MenuItem value={team_data.team_id}>{team_data.name}</MenuItem>
+        });
+        return (items)
+    }
+    retrieveTicketHistory = (e) => {
+        console.log(e.target.value)
+        const {getTicketHistory} = this.props;
+        let team_id = e.target.value;
+        let now = moment().format('YYYY-MM-DD hh:mm:ss');
+        let before = moment().subtract(1, 'year').format('YYYY-MM-DD hh:mm:ss');
+        let step = 24;
+        getTicketHistory(team_id, before, now, step);
+    }
     render() {
-        const { classes, analytic } = this.props;
+        const { classes, analytic, auth } = this.props;
         return (
         <Grid container justify="center" spacing={3}>
             <Grid item>
@@ -91,6 +106,13 @@ class AnalyticsDashboard extends Component {
             <Grid item>
                 <Card>
                     <CardContent>
+                        <InputLabel id="team_select_label">Team</InputLabel>
+                        <Select labelId='team_select_label'
+                                id='team_history_select'
+                                value={auth.user.teams[0].team_id}
+                                onChange={this.retrieveTicketHistory}>
+                            {this.buildTeamSelect()}
+                        </Select>
                         {analytic.ticket_history_loaded &&
                         <Chart 
                             width={'500px'}
@@ -112,6 +134,7 @@ class AnalyticsDashboard extends Component {
                                     title: 'Tickets Open',
                                 },
                             }}
+                            chartPackages={['corechart', 'controls']}
                         />}
                     </CardContent>
                 </Card>
