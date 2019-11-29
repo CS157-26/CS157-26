@@ -5,7 +5,9 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "./store";
 
-import { withStyles, Grid } from "@material-ui/core";
+import jwt_decode from "jwt-decode";
+import setAuthToken from "./utils/setAuthToken";
+import { setCurrentUser, logoutUser } from "./actions/loginActions";
 
 import PrivateRoute from "./components/PrivateRoute";
 import Landing from "./components/landing/Landing";
@@ -16,13 +18,16 @@ import LoginAttempts from "./components/login/LoginAttempts"
 import Dashboard from "./components/dashboard/Dashboard";
 
 import TeamCreation from "./components/teams/TeamCreation";
-
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 
 import jwt_decode from "jwt-decode";
 import setAuthToken from "./utils/setAuthToken";
 import { setCurrentUser, logoutUser } from "./actions/loginActions";
+import PrivateRoute from "./components/PrivateRoute";
+import CreateTickets from "./components/tickets/CreateTickets";
+
+import { withStyles, Grid } from "@material-ui/core";
 
 if (localStorage.jwtToken) {
   const token = localStorage.jwtToken;
@@ -63,8 +68,9 @@ class App extends Component {
                 <Route exact path="/login" component={Login} />
                 <PrivateRoute exact path="/loginattempts" component={LoginAttempts} />
                 <PrivateRoute exact path="/analytics" component={AnalyticsDashboard} />
-                <PrivateRoute exact path="/teamcreation" component={TeamCreation} />>
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
+                <PrivateRoute exact path="/teamcreation" component={TeamCreation} />
+                <PrivateRoute exact path="/tickets/create" component={CreateTickets} />
               </Switch>
             </Grid>
           </Grid>
