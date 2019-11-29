@@ -21,10 +21,7 @@ import TeamCreation from "./components/teams/TeamCreation";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 
-import jwt_decode from "jwt-decode";
-import setAuthToken from "./utils/setAuthToken";
-import { setCurrentUser, logoutUser } from "./actions/loginActions";
-import PrivateRoute from "./components/PrivateRoute";
+
 import CreateTickets from "./components/tickets/CreateTickets";
 
 import { withStyles, Grid } from "@material-ui/core";
