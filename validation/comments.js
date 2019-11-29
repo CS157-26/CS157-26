@@ -39,6 +39,7 @@ const createCommentsValidation = {
         }
     },
     current_status: {
+        in: ["body"],
         optional: true,
         isString: true,
         toString: true,
@@ -47,14 +48,22 @@ const createCommentsValidation = {
         }
     },
     priority: {
+        in: ["body"],
         optional: true,
         isInt: true,
         toInt: true
     },
     protected_status: {
+        in: ["body"],
         optional: true,
         isBoolean: true,
         toBoolean: true
+    },
+    assignee: {
+        in: ["body"],
+        optional: true,
+        isInt: true,
+        toInt: true
     }
 };
 
