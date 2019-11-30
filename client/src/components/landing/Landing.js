@@ -6,6 +6,8 @@ import PeopleIcon from '@material-ui/icons/People';
 import ConfirmationNumberIcon from '@material-ui/icons/ConfirmationNumber';
 import EmojiPeopleIcon from '@material-ui/icons/EmojiPeople';
 
+import axios from "axios";
+
 const styles = theme => ({
   placeHolderGreeter: {
     fontSize: "108px",
@@ -36,12 +38,6 @@ class Landing extends Component {
     this.state = {
       subtitle: ""
     };
-  }
-
-  componentDidMount = () => {
-    setInterval(100, () => {
-      
-    });
   }
 
   render() {
