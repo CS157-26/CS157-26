@@ -305,7 +305,6 @@ router.post("/",
 // @req     author_id: The user id of the user whose comments history is to be queried
 // @req     ticket_id: The ticket id of the ticket that contains the comments to be queried
 // @req     limit: Optional number of comments to be queried
-// @access  Private
 router.post("/comments", checkSchema(commentsValidator.fetchCommentsValidation),(req, res) => {
     const errors = validationResult(req);
     if (errors.isEmpty() === false) {
@@ -376,6 +375,144 @@ router.post("/create", checkSchema(createTicketsValidation), (req, res) => {
     } else {
         return res.status(400).send({ error_msg: "Error: Bad request", ...validationErrors});
     }
+});
+
+// @route   POST api/tickets/comments/create
+// @desc    Creates a ticket and adds it to the database
+// @req.body.ticket_id          ticket_id: The ticket that the comment will be embedded to
+// @req.body.author_id          author_id: The user_id of the author
+// @req.body.content_text       content_text: The text of the comment
+// @req.body.current_status     current_status: OPTIONAL changes the ticket's current status to this value
+// @req.body.priority           priority: OPTIONAL changes the ticket's priority to this value
+// @req.body.protected_status   protected_status: OPTIONAL changes the ticket's protected_status to this value
+// @req.body.assignee           assignee: OPTIONAL changes the assignee of the ticket
+// @access  Private
+router.post("/comments/create", checkSchema(commentsValidator.createCommentsValidation), async (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
+    }
+
+    const {ticket_id, author_id, content_text, current_status, priority, protected_status, assignee} = req.body;
+    const query = `
+        INSERT INTO comments(ticket_id, author_id, content_text, creation_date, modification_date)
+        VALUES(${ticket_id}, ${author_id}, "${content_text}", CURRENT_TIME, CURRENT_TIME)`;
+
+    db.query(query, (err, rows, fields) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        }
+
+        let updatedAttributes = "";
+        if (current_status) {
+            updatedAttributes = `current_status="${current_status}"`;
+        }
+        if (priority) {
+            if (updatedAttributes.length > 0) {
+                updatedAttributes += `, priority=${priority}`;
+            } else {
+                updatedAttributes = `priority=${priority}`;
+            }
+        }
+        if (protected_status != undefined) {
+            if (updatedAttributes.length > 0) {
+                updatedAttributes += `, protected_status=${protected_status}`;
+            } else {
+                updatedAttributes = `protected_status=${protected_status}`;
+            }
+        }
+
+        if (updatedAttributes.length > 0) {
+            const updateTicketQuery = `
+                UPDATE tickets
+                SET ${updatedAttributes}, modification_date=CURRENT_TIME
+                WHERE tickets.ticket_id=${ticket_id}`;
+            db.query(updateTicketQuery, (updateErr, updateRows, updateFields) => {
+                if (updateErr) {
+                    res.status(500).send({error_msg: "A database error occured"});
+                } else if (!assignee) {
+                    res.status(200).send({ msg: "Comment successfully posted and ticket successfully updated!"}); 
+                }
+            })
+        }
+
+        if (assignee) {
+            const checkForAssignee = `SELECT * FROM userassignment WHERE ticket_id=${ticket_id}`;
+
+            db.query(checkForAssignee, (checkErr, checkRows, checkFields) => {
+                if (checkErr) {
+                    return res.status(500).json({ error_msg: "Error: Database error"});
+                }
+
+                let setAssigneeQuery;
+                
+                if (checkRows.length > 0) {
+                    setAssigneeQuery = `UPDATE userassignment SET user_id=${assignee} WHERE ticket_id=${ticket_id}`;
+                } else {
+                    setAssigneeQuery = `INSERT INTO userassignment(user_id, ticket_id) VALUES (${assignee}, ${ticket_id})`;
+                }
+
+                db.query(setAssigneeQuery, (assigneeErr, assigneeRows, assigneeFields) => {
+                    if (assigneeErr) {
+                        return res.status(500).json({ error_msg: "Error: Database error"});
+                    }
+                    return res.status(200).json({ msg: "Comment successfully created and edits posted!"});
+                });
+            });
+        }
+    });
+});
+
+// @route   PUT api/tickets/comments
+// @desc    Updates or edits an existing comment
+// @req     comment_id: The id of the comment to be updated
+// @req     content_text: The text to update the existing text
+// @access  Private
+router.put("/comments", checkSchema(commentsValidator.updateCommentsValidation), (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
+    }
+
+    const {comment_id, content_text} = req.body;
+    const query = `
+        UPDATE comments
+        SET content_text=${content_text}, modification_date=CURRENT_TIME
+        WHERE comments.comment_id=${comment_id}
+    `;
+
+    db.query(query, (err, rows, fields) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        } else {
+            res.status(200).send({ msg: "Comment successfully updated!"});
+        }
+    });
+});
+
+// @route   DELETE api/tickets/comments
+// @desc    Deletes a specific comment
+// @req     comment_id: The id of the comment to be deleted
+// @access  Private
+router.delete("/comments", checkSchema(commentsValidator.deleteCommentsValidation), (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
+    }
+
+    const {comment_id} = req.body;
+    const query = `
+        DELETE FROM comments
+        WHERE comments.comment_id=${comment_id}
+    `;
+
+    db.query(query, (err, rows, fields) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        } else {
+            res.status(200).send({ msg: "Comment successfully deleted!"});
+        }
+    });
 });
 
 module.exports = router;
