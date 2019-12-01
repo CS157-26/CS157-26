@@ -18,7 +18,7 @@ app.use("/api/users", require("./routes/api/users"));
 app.use("/api/tickets", require("./routes/api/tickets"));
 app.use("/api/login", require("./routes/api/login"));
 app.use("/api/attempts", require("./routes/api/attempts"));
-app.use("/api/analytics", require("./routes/api/analytics"));
+app.use("/api/data", require("./routes/api/analytics"));
 app.use("/api/teamcreation", require("./routes/api/teamcreation"));
 app.use("/api/cti", require("./routes/api/cti"));
 

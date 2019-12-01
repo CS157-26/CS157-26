@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -57,6 +58,9 @@ const useStyles = makeStyles(theme => ({
     },
     border: {
         border: "2px solid red"
+    },
+    noStyling: {
+        textDecoration: "none"
     }
 }));
 
@@ -245,7 +249,9 @@ export default function TeamCreation() {
                                 spacing={2}
                             >
                                 <Grid item>
-                                    <Button className={classes.backButton}>BACK</Button>
+                                    <Link to="/dashboard" className={classes.noStyling}>
+                                        <Button className={classes.backButton}>BACK</Button>
+                                    </Link>
                                 </Grid>
                                 <Grid item>
                                     <Button

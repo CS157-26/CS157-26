@@ -1,13 +1,17 @@
 import React, { Component } from 'react'
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
 import { connect } from "react-redux";
-import { getOverviewUserTickets, clearTickets, clearTicketDetails } from "../../actions/dashboardActions";
+import { getAuthoredTickets, getAssignedTickets, getTeamTickets, getAllTickets, clearTickets, clearTicketDetails, getTeams } from "../../actions/dashboardActions";
 
 import TicketCard from "./TicketCard";
+import TeamCard from "./TeamCard";
 
-import { Grid, withStyles, Modal } from "@material-ui/core";
+import { Grid, withStyles, Modal, Button } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
+
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
 const styles = theme => ({
     w100: {
@@ -15,7 +19,10 @@ const styles = theme => ({
     },
     border: {
         border: "1px solid black"
-    }
+    },
+    noStyling: {
+      textDecoration: "none"
+    },
 });
 
 class Dashboard extends Component {
@@ -32,8 +39,17 @@ class Dashboard extends Component {
     }
 
     componentDidMount = () => {
-        const { getOverviewUserTickets, auth } = this.props;
-        getOverviewUserTickets(auth.user.id, auth.user.team);
+        const { getAuthoredTickets, getAssignedTickets, getTeamTickets, getAllTickets, auth, getTeams } = this.props;
+        getAuthoredTickets(auth.user.id);
+        getAssignedTickets(auth.user.id);
+
+        if (auth.user.teams && auth.user.teams.length > 0) {
+            getTeamTickets(auth.user.teams[0].team_id);
+        }
+
+        getAllTickets();
+
+        getTeams(auth.user.id);
     }
 
     componentWillUnmount = () => {
@@ -58,6 +74,16 @@ class Dashboard extends Component {
         })
     }
 
+    getTableTheme = () => createMuiTheme({
+        overrides: {
+            MUIDataTableBodyCell: {
+                root: {
+                    width: "100px"
+                }
+            }
+        }
+    })
+
     render() {
         const { classes, dashboard } = this.props;
 
@@ -72,9 +98,9 @@ class Dashboard extends Component {
             {name: "creation_date", label: "Creation Date"}
         ];
 
-        let ticketData = [];
-        if (dashboard.tickets_overview.length > 0) {
-            ticketData = dashboard.tickets_overview.map(ticket => {
+        let authoredTicketData = [];
+        if (dashboard.tickets_overview.authored && dashboard.tickets_overview.authored.length > 0) {
+            authoredTicketData = dashboard.tickets_overview.authored.map(ticket => {
                 return {
                     title: ticket.title,
                     current_status: ticket.current_status,
@@ -89,23 +115,144 @@ class Dashboard extends Component {
             });
         }
 
-        const handleRowClick = (rowData, rowMeta) => {
-            this.handleModalOpen(ticketData[rowMeta.dataIndex].ticket_id);
+        let assignedTicketData = [];
+        if (dashboard.tickets_overview.assigned && dashboard.tickets_overview.assigned.length > 0) {
+            assignedTicketData = dashboard.tickets_overview.assigned.map(ticket => {
+                return {
+                    title: ticket.title,
+                    current_status: ticket.current_status,
+                    priority: ticket.priority,
+                    item: ticket.item_name,
+                    type: ticket.type_name,
+                    category: ticket.category_name,
+                    author: ticket.author_name,
+                    creation_date: ticket.creation_date.substring(0, 10),
+                    ticket_id: ticket.ticket_id
+                };
+            });
+        }
+
+        let teamsTicketData = [];
+        if (dashboard.tickets_overview.teams && dashboard.tickets_overview.teams.length > 0) {
+            teamsTicketData = dashboard.tickets_overview.teams.map(ticket => {
+                return {
+                    title: ticket.title,
+                    current_status: ticket.current_status,
+                    priority: ticket.priority,
+                    item: ticket.item_name,
+                    type: ticket.type_name,
+                    category: ticket.category_name,
+                    author: ticket.author_name,
+                    creation_date: ticket.creation_date.substring(0, 10),
+                    ticket_id: ticket.ticket_id
+                };
+            });
+        }
+
+        let allTicketData = [];
+        if (dashboard.tickets_overview.all && dashboard.tickets_overview.all.length > 0) {
+            allTicketData = dashboard.tickets_overview.all.map(ticket => {
+                return {
+                    title: ticket.title,
+                    current_status: ticket.current_status,
+                    priority: ticket.priority,
+                    item: ticket.item_name,
+                    type: ticket.type_name,
+                    category: ticket.category_name,
+                    author: ticket.author_name,
+                    creation_date: ticket.creation_date.substring(0, 10),
+                    ticket_id: ticket.ticket_id
+                };
+            });
+        }
+
+        const handleAuthoredRowClick = (rowData, rowMeta) => {
+            this.handleModalOpen(authoredTicketData[rowMeta.dataIndex].ticket_id);
         };
 
-        const options = {
-            onRowClick: handleRowClick
+        const handleAssignedRowClick = (rowData, rowMeta) => {
+            this.handleModalOpen(assignedTicketData[rowMeta.dataIndex].ticket_id);
         };
+
+        const handleTeamRowClick = (rowData, rowMeta) => {
+            this.handleModalOpen(teamsTicketData[rowMeta.dataIndex].ticket_id);
+        };
+        
+        const handleAllRowClick = (rowData, rowMeta) => {
+            this.handleModalOpen(allTicketData[rowMeta.dataIndex].ticket_id);
+        };
+
+        const authoredOptions = {
+            onRowClick: handleAuthoredRowClick
+        };
+
+        const assignedOptions = {
+            onRowClick: handleAssignedRowClick
+        }
+
+        const teamsOptions = {
+            onRowClick: handleTeamRowClick
+        }
+
+        const allOptions = {
+            onRowClick: handleAllRowClick
+        }
 
         return (
-            <Grid className={classes.w100} container direction="column" justify="flex-start" alignItems="center">
-                <Grid item xs={12}>
-                    <MUIDataTable
-                        title={"Your Tickets"}
-                        data={ticketData}
-                        columns={columns}
-                        options={options}
+            <Grid container direction="column" justify="flex-start" alignItems="center" spacing={4} className={classes.w100}>
+                <Grid item sm={12}>
+                    <TeamCard
+                        teams={this.props.dashboard ? { assignedTeams: this.props.dashboard.teams, isLoading: this.props.teams_loading } : undefined}
                     />
+                </Grid>
+                <Grid item xs={10}>
+                    <MuiThemeProvider theme={this.getTableTheme()}>
+                        <MUIDataTable
+                            title={"Your Submitted Tickets"}
+                            data={authoredTicketData}
+                            columns={columns}
+                            options={authoredOptions}
+                            className={classes.w100}
+                        />
+                    </MuiThemeProvider>
+                </Grid>
+                <Grid item xs={10}>
+                    <MuiThemeProvider theme={this.getTableTheme()}>
+                        <MUIDataTable
+                            title={"Tickets Assigned To You"}
+                            data={assignedTicketData}
+                            columns={columns}
+                            options={assignedOptions}
+                            
+                        />
+                    </MuiThemeProvider>
+                </Grid>
+                <Grid item xs={10}>
+                    <MuiThemeProvider theme={this.getTableTheme()}>
+                        <MUIDataTable
+                            title={"Tickets Assigned To Your Team"}
+                            data={teamsTicketData}
+                            columns={columns}
+                            options={teamsOptions}
+                            
+                        />
+                    </MuiThemeProvider>
+                </Grid>
+                <Grid item xs={10}>
+                    <MuiThemeProvider theme={this.getTableTheme()}>
+                        <MUIDataTable
+                            title={"All Tickets"}
+                            data={allTicketData}
+                            columns={columns}
+                            options={allOptions}
+                            
+                        />
+                    </MuiThemeProvider>
+                </Grid>
+                <Grid item>
+                    <Link to="/tickets/create" className={classes.noStyling}>
+                        <Button variant="contained" color="primary">Submit New Ticket</Button>
+                    </Link>
                 </Grid>
                 <Modal open={this.state.isModalOpen} onClose={this.handleClose}>
                     <TicketCard 
@@ -127,4 +274,4 @@ const mapStateToProps = state => ({
     dashboard: state.dashboard
 })
 
-export default connect(mapStateToProps, {getOverviewUserTickets, clearTickets, clearTicketDetails})(withStyles(styles)(Dashboard));
+export default connect(mapStateToProps, {getAuthoredTickets, getAssignedTickets, getTeamTickets, getAllTickets, clearTickets, clearTicketDetails, getTeams})(withStyles(styles)(Dashboard));

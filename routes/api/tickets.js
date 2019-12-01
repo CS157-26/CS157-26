@@ -4,7 +4,7 @@ const db = require("../../config/db");
 
 const { check, checkSchema, validationResult } = require("express-validator");
 const commentsValidator = require("../../validation/comments");
-const { createTicketsValidation } = require("../../validation/tickets");
+const { createTicketsValidation, fetchOverviewTickets } = require("../../validation/tickets");
 
 /*
 const passport = require("passport");
@@ -112,17 +112,27 @@ async function getTicketAssignees(ticket_id)
  * @param {string} team_id Id of the team associated with the tickets.
  * @return {string} A string containing the query generated.
  */
-const buildTicketFilter = (user_id, team_id) => {
-    let filter = "";
+const buildTicketFilter = (user_id, team_id, params) => {
+    let condition = "";
     if (user_id) {
-        filter = `WHERE assignees.user_id = ${user_id} OR ticket.author_id = ${user_id}`;
+        condition = `WHERE ticket.author_id = ${user_id}`;
+        if (params & params === "assigned") {
+            condition += `OR assignees.user_id = ${user_id}`;
+        }
     }
     if (team_id) {
-        if (filter.length == 0) {
-            filter = `WHERE type.team_id = ${team_id}`;
+        if (condition.length == 0) {
+            condition = `WHERE type.team_id = ${team_id}`;
         } else {
-            filter += ` AND type.team_id = ${team_id}`;
+            condition += ` AND type.team_id = ${team_id}`;
         }
+    }
+
+    let filter = "";
+    if (params && params === "assigned") {
+        filter = "JOIN userassignment assignees ON assignees.ticket_id = ticket.ticket_id";
+    } else if (params && params === "authored") {
+        filter = "";
     }
 
     const query = `SELECT DISTINCT ticket.ticket_id, ticket.item_id, ticket.title, ticket.current_status,
@@ -133,7 +143,7 @@ const buildTicketFilter = (user_id, team_id) => {
     JOIN items item ON item.item_id = ticket.item_id
     JOIN types type ON type.type_id = item.type_id
     JOIN categories category ON category.category_id = type.category_id
-    JOIN userassignment assignees ON assignees.ticket_id = ticket.ticket_id ${filter}`;
+    ${filter} ${condition}`;
 
     return query;
 }
@@ -220,11 +230,9 @@ router.post("/details",
 // @desc    Returns a list of ticket overview info
 // @param   user_id - Specifies the user we want to retrieve tickets for
 // @param   team_id - Specifies the team we want to retrieve tickets for
+// @param   params - Specifies whether to fetch tickets authored by the user or assigned to the user
 // @access  Private
-router.post("/overview",
-    //passport.authenticate('jwt', {session: false}),
-    [
-    ],
+router.post("/overview", checkSchema(fetchOverviewTickets),
     async (req, res) =>{
         var validationError = validationResult(req);
         if (!validationError.isEmpty()) {
@@ -232,10 +240,11 @@ router.post("/overview",
             .status(400)
             .json({msg:"Bad Request: "});
         }
-        const {user_id, team_id} = req.body;
+
+        const {user_id, team_id, params} = req.body;
 
         db.query(
-            buildTicketFilter(user_id, team_id),
+            buildTicketFilter(user_id, team_id, params),
             (err, rows, fields) => {
                 if (err) {
                     res

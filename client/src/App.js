@@ -42,7 +42,8 @@ const styles = {
   minHeight: {
     minHeight: "95vh",
     margin: 0,
-    padding: 0,
+    paddingTop: "2em",
+    paddingBottom: "2em",
     boxSizing: "border-box"
   },
   border: {

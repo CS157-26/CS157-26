@@ -31,6 +31,28 @@ const createTicketsValidation = {
     }
 }
 
+const fetchOverviewTickets = {
+    user_id: {
+        in: ["body"],
+        optional: true,
+        isInt: true,
+        toInt: true
+    },
+    team_id: {
+        in: ["body"],
+        optional: true,
+        isInt: true,
+        toInt: true
+    },
+    params: {
+        in: ["body"],
+        optional: true,
+        isString: true,
+        toString: true
+    }
+}
+
 module.exports = {
-    createTicketsValidation
+    createTicketsValidation,
+    fetchOverviewTickets
 }
