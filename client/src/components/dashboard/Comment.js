@@ -126,7 +126,7 @@ export default function Comment(props) {
             protected_status: protectedStatus,
             assignee: assignee,
         }
-        axios.post("api/tickets/comments", commentData)
+        axios.post("api/tickets/comments/create", commentData)
             .then(res => {
                 console.log(res.data);
             })
