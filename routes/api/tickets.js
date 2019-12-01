@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { check , validationResult } = require("express-validator");
 const db = require("../../config/db");
+
+const { check, checkSchema, validationResult } = require("express-validator");
+const commentsValidator = require("../../validation/comments");
+const { createTicketsValidation, fetchOverviewTickets } = require("../../validation/tickets");
 
 /*
 const passport = require("passport");
@@ -109,39 +112,40 @@ async function getTicketAssignees(ticket_id)
  * @param {string} team_id Id of the team associated with the tickets.
  * @return {string} A string containing the query generated.
  */
-function buildTicketFilter(user_id, team_id)
-{
-    var strA = [
-        `SELECT DISTINCT ticket.ticket_id, ticket.item_id, ticket.author_id, ticket.title, ticket.current_status,
-        ticket.priority, ticket.creation_date, ticket.modification_date, ticket.protected_status,
-        item.name AS item_name, type.name AS type_name, category.name AS category_name
-        FROM tickets ticket
-        JOIN items item ON item.item_id = ticket.item_id
-        JOIN types type ON type.type_id = item.type_id
-        JOIN categories category ON category.category_id = type.category_id
-        JOIN userassignment assignees ON assignees.ticket_id = ticket.ticket_id`
-    ]
-    if ((user_id && user_id != "") || (team_id && team_id != "")) {
-        strA[1] = " WHERE";
-        var i = 2;
-        if (user_id && user_id != "") {
-            strA[i] = " assignees.user_id = ";
-            strA[i+1] = user_id;
-            strA[i+2] = " OR ";
-            strA[i+3] = " ticket.author_id = ";
-            strA[i+4] = user_id;
-            i = i + 5;
-            if (team_id && team_id != "") {
-                strA[i] = " AND";
-                i = i + 1;
-            }
-        }
-        if (team_id && team_id != "") {
-            strA[i+2] = " type.team_id = ";
-            strA[i+1] = team_id;
+const buildTicketFilter = (user_id, team_id, params) => {
+    let condition = "";
+    if (user_id) {
+        condition = `WHERE ticket.author_id = ${user_id}`;
+        if (params & params === "assigned") {
+            condition += `OR assignees.user_id = ${user_id}`;
         }
     }
-    return strA.join("");
+    if (team_id) {
+        if (condition.length == 0) {
+            condition = `WHERE type.team_id = ${team_id}`;
+        } else {
+            condition += ` AND type.team_id = ${team_id}`;
+        }
+    }
+
+    let filter = "";
+    if (params && params === "assigned") {
+        filter = "JOIN userassignment assignees ON assignees.ticket_id = ticket.ticket_id";
+    } else if (params && params === "authored") {
+        filter = "";
+    }
+
+    const query = `SELECT DISTINCT ticket.ticket_id, ticket.item_id, ticket.title, ticket.current_status,
+    ticket.priority, ticket.creation_date, ticket.modification_date, ticket.protected_status,
+    item.name AS item_name, type.name AS type_name, category.name AS category_name, user.username AS author_name
+    FROM tickets ticket
+    JOIN users user ON user.user_id = ticket.author_id
+    JOIN items item ON item.item_id = ticket.item_id
+    JOIN types type ON type.type_id = item.type_id
+    JOIN categories category ON category.category_id = type.category_id
+    ${filter} ${condition}`;
+
+    return query;
 }
 
 /**
@@ -184,7 +188,7 @@ async function buildDetailsDoc(ticketDetails, ticket_id, res)
 // @desc    Returns a ticket
 // @param ticket_id - the id of the ticket with the details
 // @access  Private
-router.get("/details",
+router.post("/details",
     //passport.authenticate('jwt', {session: false}),
     [
         check('ticket_id').exists()
@@ -194,19 +198,20 @@ router.get("/details",
         if (!validationError.isEmpty()) {
             return res
             .status(400)
-            .json({msg:"Bad Request: A ticket_id must be provided."});
+            .send({msg:"Bad Request: A ticket_id must be provided."});
         }
 
         const {ticket_id} = req.body;
 
         db.query(
-       `SELECT ticket.*, item.name AS "item_name", type.name AS "type_name",
-        category.name AS "category_name"
-        FROM tickets ticket
-        JOIN items item ON item.item_id = ticket.item_id
-        JOIN types type ON type.type_id = item.type_id
-        JOIN categories category ON category.category_id = type.category_id
-        WHERE ticket.ticket_id = ?`, [ticket_id],
+       `SELECT ticket.*, author.username as "author_name", item.name AS "item_name", type.name AS "type_name",
+       category.name AS "category_name"
+       FROM tickets ticket
+       JOIN items item ON item.item_id = ticket.item_id
+       JOIN types type ON type.type_id = item.type_id
+       JOIN categories category ON category.category_id = type.category_id
+       JOIN users author ON ticket.author_id = author.user_id
+       WHERE ticket.ticket_id = ?`, [ticket_id],
         (err, rows, fields) => {
             if (err) {
                 res.status(500).json({msg:"Error: There was an issue retreiving the ticket."});
@@ -223,13 +228,11 @@ router.get("/details",
 
 // @route   GET api/tickets/overview
 // @desc    Returns a list of ticket overview info
-// @param user_id - Specifies the user we want to retrieve tickets for
-// @param team_id - Specifies the team we want to retrieve tickets for
+// @param   user_id - Specifies the user we want to retrieve tickets for
+// @param   team_id - Specifies the team we want to retrieve tickets for
+// @param   params - Specifies whether to fetch tickets authored by the user or assigned to the user
 // @access  Private
-router.get("/overview",
-    //passport.authenticate('jwt', {session: false}),
-    [
-    ],
+router.post("/overview", checkSchema(fetchOverviewTickets),
     async (req, res) =>{
         var validationError = validationResult(req);
         if (!validationError.isEmpty()) {
@@ -237,15 +240,16 @@ router.get("/overview",
             .status(400)
             .json({msg:"Bad Request: "});
         }
-        const {user_id, team_id} = req.body;
+
+        const {user_id, team_id, params} = req.body;
 
         db.query(
-            buildTicketFilter(user_id, team_id),
+            buildTicketFilter(user_id, team_id, params),
             (err, rows, fields) => {
                 if (err) {
                     res
                     .status(500)
-                    .json({msg:"Error: There was an issue retreving the requested tickets", error:err});
+                    .json({msg:"Error: There was an issue retrieving the requested tickets", error:err});
                 } else {
                     res
                     .status(200)
@@ -303,6 +307,221 @@ router.post("/",
                 .send("success");
             }
         });
+});
+
+// @route   POST api/tickets/comments
+// @desc    Returns comments made by a user or comments to a specific ticket or comments made by a user for a specific ticket
+// @req     author_id: The user id of the user whose comments history is to be queried
+// @req     ticket_id: The ticket id of the ticket that contains the comments to be queried
+// @req     limit: Optional number of comments to be queried
+router.post("/comments", checkSchema(commentsValidator.fetchCommentsValidation),(req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors });
+    }
+
+    const {author_id, ticket_id, limit} = req.body;
+
+    let filter = "";
+
+    if (author_id) {
+        filter = ` WHERE users.user_id=${author_id}`;
+    }
+    if (ticket_id) {
+        if (filter.length > 0) {
+            filter += ` AND comments.author_id=${ticket_id}`;
+        } else {
+            filter = ` WHERE comments.author_id=${ticket_id}`;
+        }
+    }
+
+    if (filter.length === 0) {
+        return res.status(400).send({ error_msg: "Bad request: author_id and/or ticket_id required" });
+    }
+
+    let query = "SELECT comments.*, users.username FROM comments JOIN users ON(comments.author_id=users.user_id)";
+    query += filter;
+
+    if (limit) {
+        query += ` LIMIT ${limit}`;
+    }
+
+    db.query(query, (err, rows, field) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        } else if (rows.length > 0) {
+            res.status(200).send(rows);
+        } else {
+            res.status(404).send({ msg: "Comments not found"});
+        }
+    });
+});
+
+//  @route  POST /api/tickets/create
+//  @desc   Create new entries to categories, types, items, and tickets.
+//  @access Private
+//  @param  item_id:        The item_id that the ticket falls under
+//  @param  author_id:      The id of the user who made the ticket
+//  @param  title:          The title of the ticket
+//  @param  content_text:   The description of the ticket
+//  @param  priority:       The priority of the ticket
+router.post("/create", checkSchema(createTicketsValidation), (req, res) => {
+    const validationErrors = validationResult(req);
+    if (validationErrors.isEmpty() === true) {
+        let {item_id, author_id, title, content_text, priority} = req.body;
+
+        const ticketQuery = `
+            INSERT INTO tickets(item_id, author_id, title, content_text, current_status, priority, creation_date, modification_date, protected_status)
+            VALUES(${item_id}, ${author_id}, ${db.escape(title.toLowerCase())}, ${db.escape(content_text.toLowerCase())}, "PENDING", ${db.escape(priority)}, CURRENT_TIME, CURRENT_TIME, ${false})`;
+
+        db.query(ticketQuery, (err, rows, fields) => {
+            if (err) {
+                return res.status(500).send({error_msg: "Error: A database error occured"});
+            } else {
+                return res.status(200).send({msg: "Ticket submitted successfully!"});
+            }
+        });
+    } else {
+        return res.status(400).send({ error_msg: "Error: Bad request", ...validationErrors});
+    }
+});
+
+// @route   POST api/tickets/comments/create
+// @desc    Creates a ticket and adds it to the database
+// @req.body.ticket_id          ticket_id: The ticket that the comment will be embedded to
+// @req.body.author_id          author_id: The user_id of the author
+// @req.body.content_text       content_text: The text of the comment
+// @req.body.current_status     current_status: OPTIONAL changes the ticket's current status to this value
+// @req.body.priority           priority: OPTIONAL changes the ticket's priority to this value
+// @req.body.protected_status   protected_status: OPTIONAL changes the ticket's protected_status to this value
+// @req.body.assignee           assignee: OPTIONAL changes the assignee of the ticket
+// @access  Private
+router.post("/comments/create", checkSchema(commentsValidator.createCommentsValidation), async (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
+    }
+
+    const {ticket_id, author_id, content_text, current_status, priority, protected_status, assignee} = req.body;
+    const query = `
+        INSERT INTO comments(ticket_id, author_id, content_text, creation_date, modification_date)
+        VALUES(${ticket_id}, ${author_id}, "${content_text}", CURRENT_TIME, CURRENT_TIME)`;
+
+    db.query(query, (err, rows, fields) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        }
+
+        let updatedAttributes = "";
+        if (current_status) {
+            updatedAttributes = `current_status="${current_status}"`;
+        }
+        if (priority) {
+            if (updatedAttributes.length > 0) {
+                updatedAttributes += `, priority=${priority}`;
+            } else {
+                updatedAttributes = `priority=${priority}`;
+            }
+        }
+        if (protected_status != undefined) {
+            if (updatedAttributes.length > 0) {
+                updatedAttributes += `, protected_status=${protected_status}`;
+            } else {
+                updatedAttributes = `protected_status=${protected_status}`;
+            }
+        }
+
+        if (updatedAttributes.length > 0) {
+            const updateTicketQuery = `
+                UPDATE tickets
+                SET ${updatedAttributes}, modification_date=CURRENT_TIME
+                WHERE tickets.ticket_id=${ticket_id}`;
+            db.query(updateTicketQuery, (updateErr, updateRows, updateFields) => {
+                if (updateErr) {
+                    res.status(500).send({error_msg: "A database error occured"});
+                } else if (!assignee) {
+                    res.status(200).send({ msg: "Comment successfully posted and ticket successfully updated!"}); 
+                }
+            })
+        }
+
+        if (assignee) {
+            const checkForAssignee = `SELECT * FROM userassignment WHERE ticket_id=${ticket_id}`;
+
+            db.query(checkForAssignee, (checkErr, checkRows, checkFields) => {
+                if (checkErr) {
+                    return res.status(500).json({ error_msg: "Error: Database error"});
+                }
+
+                let setAssigneeQuery;
+                
+                if (checkRows.length > 0) {
+                    setAssigneeQuery = `UPDATE userassignment SET user_id=${assignee} WHERE ticket_id=${ticket_id}`;
+                } else {
+                    setAssigneeQuery = `INSERT INTO userassignment(user_id, ticket_id) VALUES (${assignee}, ${ticket_id})`;
+                }
+
+                db.query(setAssigneeQuery, (assigneeErr, assigneeRows, assigneeFields) => {
+                    if (assigneeErr) {
+                        return res.status(500).json({ error_msg: "Error: Database error"});
+                    }
+                    return res.status(200).json({ msg: "Comment successfully created and edits posted!"});
+                });
+            });
+        }
+    });
+});
+
+// @route   PUT api/tickets/comments
+// @desc    Updates or edits an existing comment
+// @req     comment_id: The id of the comment to be updated
+// @req     content_text: The text to update the existing text
+// @access  Private
+router.put("/comments", checkSchema(commentsValidator.updateCommentsValidation), (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
+    }
+
+    const {comment_id, content_text} = req.body;
+    const query = `
+        UPDATE comments
+        SET content_text=${content_text}, modification_date=CURRENT_TIME
+        WHERE comments.comment_id=${comment_id}
+    `;
+
+    db.query(query, (err, rows, fields) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        } else {
+            res.status(200).send({ msg: "Comment successfully updated!"});
+        }
+    });
+});
+
+// @route   DELETE api/tickets/comments
+// @desc    Deletes a specific comment
+// @req     comment_id: The id of the comment to be deleted
+// @access  Private
+router.delete("/comments", checkSchema(commentsValidator.deleteCommentsValidation), (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty() === false) {
+        return res.status(400).send({ error_msg: "Bad request: Invalid request", ...errors});
+    }
+
+    const {comment_id} = req.body;
+    const query = `
+        DELETE FROM comments
+        WHERE comments.comment_id=${comment_id}
+    `;
+
+    db.query(query, (err, rows, fields) => {
+        if (err) {
+            res.status(500).send({ error_msg: `Server error: Database error encountered: ${err}`});
+        } else {
+            res.status(200).send({ msg: "Comment successfully deleted!"});
+        }
+    });
 });
 
 module.exports = router;

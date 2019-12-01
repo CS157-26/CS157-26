@@ -27,6 +27,38 @@ router.get("/current", (req, res) => {
     });
 });
 
+router.get("/members", (req, res) => {
+    const query = "SELECT user_id AS id, username AS name FROM users JOIN teamMembers USING (user_id) JOIN types USING (team_id) JOIN items USING (type_id) WHERE item_id = " + req.query.itemid;
+    db.query(query, (err, rows) => {
+        if (err) {
+            res.status(500).json({ msg: err });
+        } else {
+            if (!rows) {
+                res.status(500).json({ msg: "Error: no teams found associated with ticket" });
+            } else {
+                const results = JSON.parse(JSON.stringify(rows));
+                res.status(200).json(results);
+            }
+        }
+    });
+})
+
+router.get("/currentteams", (req, res) => {
+    const query = "SELECT * FROM teams";
+    db.query(query, (err, rows) => {
+        if (err) {
+            res.status(500).json({ msg: "Error: unable to retrieve existing teams" });
+        } else {
+            if (!rows) {
+                res.status(500).json({ msg: "Error: no teams found. Please contact administrator" });
+            } else {
+                const results = JSON.parse(JSON.stringify(rows));
+                res.status(200).json(results);
+            }
+        }
+    });
+})
+
 router.post("/create", (req, res) => {
     const query = "INSERT INTO teams VALUES (DEFAULT, '" + req.body.name + "' )";
     db.query(query, (err, rows) => {

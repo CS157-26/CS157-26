@@ -1,12 +1,11 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
-const { check , validationResult } = require("express-validator");
+const { check, validationResult } = require("express-validator");
 const db = require("../../config/db");
 //db.connect();
 
-function verifyPassword(password)
-{
+function verifyPassword(password) {
     /*
      * IMPORTANT NOTE:
      * The regular expression shown below was developed using techniques described in the
@@ -35,24 +34,35 @@ function verifyPassword(password)
  * @param {string} password User account password before hashed
  * @param {Response} res Response for user creation.
  */
-function addUserAccount(username, email, password, res)
-{
+function addUserAccount(username, email, password, teams, res) {
     /*
      * If this has been called, we assume that the email address does not already
      * exist in our users table, and this will indeed be a unique account.
-     */ 
-    if (!verifyPassword(password))
-    {
-        return res.status(400).json({msg:"Bad Request: The provided password does not meet the requirements specified."});
+     */
+    if (!verifyPassword(password)) {
+        return res.status(400).json({ msg: "Bad Request: The provided password does not meet the requirements specified." });
     }
 
     var pwHash = bcrypt.hashSync(password, 10); //if set the number of rounds to 10 for now
-    
-    var insertCmd = "INSERT INTO users (username, password, email, creation_date) VALUES ('"+username+"', '"+pwHash+"', '"+email+"', CURRENT_TIMESTAMP);"
-    db.query(insertCmd, (err, rows, fields)=>{
+
+    var insertCmd = "INSERT INTO users (username, password, email, creation_date) VALUES ('" + username + "', '" + pwHash + "', '" + email + "', CURRENT_TIMESTAMP);"
+    db.query(insertCmd, (err, result) => {
         if (err) {
-            res.status(500).json({msg:"Error: There was an issue registering your account"});
+            res.status(500).json({ msg: "Error: There was an issue registering your account" });
         } else {
+            const newID = result.insertId;
+            teams.map(team => {
+                if (team != "") {
+                    const teamQuery = "INSERT INTO teamMembers VALUES (" + newID + ", " + team + ")";
+                    console.log(teamQuery);
+                    db.query(teamQuery, (err) => {
+                        if (err) {
+                            console.log(err);
+                        }
+                    })
+                }
+
+            })
             res.status(200).send("success");
         }
     })
@@ -65,39 +75,59 @@ router.post("/",
     [
         check('email').isEmail(),
         check('password').exists(),
-        check('username').exists()
+        check('username').exists(),
+        check('teams').exists(),
     ],
     (req, res) => {
-    var validationErr = validationResult(req);
-    
-    
-    //Validate whether the user entered necessary information
-    if (!validationErr.isEmpty())
-    {
-        return res
-            .status(400)
-            .json({msg:"Bad Request: A valid username, email, and password must be provided for registration."});
-    }
-    /*
-     * We assume the body of the request is a json
-     * document
-     */
-    const { username, email, password } = req.body;
-    //Next, check to ensure a user with the same email doesn't already exist
-    db.query(
-        "SELECT * FROM users WHERE lower(users.email) = lower('"+email+"') LIMIT 1;",
-        (err, rows, fields) => {
-            if (err) {
-                res.status(500).json({msg:"Error: Could not verify account information."})
-            } else {
-                if (rows && rows.length)
-                {
-                    res.status(400).json({msg:"Bad Request: A User account with this email already exists."});
+        var validationErr = validationResult(req);
+
+
+        //Validate whether the user entered necessary information
+        if (!validationErr.isEmpty()) {
+            return res
+                .status(400)
+                .json({ msg: "Bad Request: A valid username, email, password, and team(s) must be provided for registration." });
+        }
+        /*
+         * We assume the body of the request is a json
+         * document
+         */
+        const { username, email, password } = req.body;
+        //Next, check to ensure a user with the same email doesn't already exist
+        db.query(
+            "SELECT * FROM users WHERE lower(users.email) = lower('" + email + "') LIMIT 1;",
+            (err, rows) => {
+                if (err) {
+                    res.status(500).json({ msg: "Error: Could not verify account information." })
                 } else {
-                    addUserAccount(username, email, password, res);
+                    if (rows && rows.length) {
+                        res.status(400).json({ msg: "Bad Request: A User account with this email already exists." });
+                    } else {
+                        const teams = req.body.teams.split(",");
+                        addUserAccount(username, email, password, teams, res);
+                    }
                 }
+            })
+    });
+
+// @route   GET api/users/teams
+// @desc    Get the names of the teams a user is in.
+// @params  user_id: The user_id of the user
+// @access  Public
+router.get("/teams", async (req, res) => {
+    const { user_id } = req.body;
+    if (user_id) {
+        const query = `SELECT teams.* FROM users JOIN teammembers USING(user_id) JOIN teams USING(team_id) WHERE users.user_id=${user_id}`;
+        db.query(query, (err, rows, field) => {
+            if (err) {
+                res.status(500).send({ msg: "Query Error: There was an error in the database query."});
+            } else {
+                res.status(200).send(rows);
             }
-    })
+        })
+    } else {
+        res.status(500).send({ msg: "Bad Request: A user id is required."});
+    }
 });
 
 module.exports = router;
