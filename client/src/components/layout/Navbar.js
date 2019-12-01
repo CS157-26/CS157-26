@@ -37,6 +37,20 @@ class Navbar extends Component {
       loggedInMarkup = (
         <>
           <Grid item>
+            <Link to="/teamcreation" className={classes.noStyling}>
+              <Button className={classes.btnClr}>
+                Teams
+              </Button>
+            </Link>
+          </Grid>
+          <Grid item>
+            <Link to="/analytics" className={classes.noStyling}>
+              <Button className={classes.btnClr}>
+                Analytics
+              </Button>
+            </Link>
+          </Grid>
+          <Grid item>
             <Link to="/dashboard" className={classes.noStyling}>
               <Button className={classes.btnClr}>
                 Dashboard
