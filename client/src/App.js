@@ -21,6 +21,8 @@ import TeamCreation from "./components/teams/TeamCreation";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 
+import Comment from "./components/dashboard/Comment";
+
 
 import CreateTickets from "./components/tickets/CreateTickets";
 
@@ -69,6 +71,7 @@ class App extends Component {
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
                 <PrivateRoute exact path="/teamcreation" component={TeamCreation} />
                 <PrivateRoute exact path="/tickets/create" component={CreateTickets} />
+                <PrivateRoute exact path="/comment" component={Comment} />
               </Switch>
             </Grid>
           </Grid>
