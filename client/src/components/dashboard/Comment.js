@@ -58,15 +58,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Comment(props) {
     const classes = useStyles();
-    const ticket_id = 1;
-
-    const fakeUsers = [
-        { id: 1, name: "test1" },
-        { id: 2, name: "test2" },
-        { id: 3, name: "test3" },
-        { id: 4, name: "test4" },
-        { id: 5, name: "test5" },
-    ];
+    const ticket_id = props.ticket_id;
 
     const user_id = useSelector(state => state.auth.user.id);
     const [commentText, setCommentText] = React.useState("");
@@ -74,7 +66,7 @@ export default function Comment(props) {
     const [priority, setPriority] = React.useState(0);
     const [protectedStatus, setProtectedStatus] = React.useState(false);
     const [assignee, setAssignee] = React.useState(0);
-    const [availUsers, setAvailUsers] = React.useState(fakeUsers);
+    const [availUsers, setAvailUsers] = React.useState([]);
 
     const setTicketData = data => {
         setCurrentStatus(data.current_status);
@@ -134,7 +126,14 @@ export default function Comment(props) {
             protected_status: protectedStatus,
             assignee: assignee,
         }
-        console.log(commentData);
+        axios.post("api/tickets/comments", commentData)
+            .then(res => {
+                console.log(res.data);
+            })
+            .catch(err => {
+                console.log(err);
+            }
+            );
     }
 
     return (
@@ -260,9 +259,6 @@ export default function Comment(props) {
                                 alignItems="center"
                                 spacing={2}
                             >
-                                <Grid item>
-                                    <Button className={classes.backButton}>BACK</Button>
-                                </Grid>
                                 <Grid item>
                                     <Button
                                         variant="contained"
