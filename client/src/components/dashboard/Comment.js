@@ -58,7 +58,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Comment(props) {
     const classes = useStyles();
-    const ticket_id = props.ticket_id;
+    const ticket_id = props.location.ticket_id;
 
     const user_id = useSelector(state => state.auth.user.id);
     const [commentText, setCommentText] = React.useState("");
@@ -93,8 +93,6 @@ export default function Comment(props) {
             });
     }, []);
 
-
-
     const handleStatus = event => {
         setCurrentStatus(event.target.value);
     };
@@ -124,11 +122,10 @@ export default function Comment(props) {
             current_status: currentStatus,
             priority: priority,
             protected_status: protectedStatus,
-            assignee: assignee,
+            assignee: assignee.user_id,
         }
         axios.post("api/tickets/comments/create", commentData)
             .then(res => {
-                console.log(res.data);
             })
             .catch(err => {
                 console.log(err);

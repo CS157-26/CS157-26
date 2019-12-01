@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
+import { Link } from "react-router-dom";
+
+import Comment from "./Comment";
 
 import { connect } from "react-redux";
 import { getTicketDetails } from "../../actions/dashboardActions";
 
-import { Grid, Card, CardContent, Typography, CircularProgress, withStyles } from "@material-ui/core";
+import { Grid, Card, CardContent, Typography, CircularProgress, withStyles, Button } from "@material-ui/core";
 
 const styles = theme => ({
     h100: {
@@ -143,6 +146,15 @@ class TicketCard extends Component {
                         <Typography variant="h5">Comments</Typography>
                     </Grid>
                     {commentsMarkup}
+                    <Grid item>
+                        <Link to = {{
+                            pathname: "/comment",
+                            ticket_id: this.props.ticketId
+                        }}
+                        >
+                            <Button variant="contained">Add Comment</Button>
+                        </Link>
+                    </Grid>
                 </Grid>
             );
         }
