@@ -133,6 +133,7 @@ export default function Comment(props) {
                 console.log(err);
             }
             );
+        props.history.push("/dashboard");
     }
 
     return (
