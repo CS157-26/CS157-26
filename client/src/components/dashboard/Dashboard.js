@@ -5,10 +5,12 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { getAuthoredTickets, getAssignedTickets, getTeamTickets, getAllTickets, clearTickets, clearTicketDetails, getTeams } from "../../actions/dashboardActions";
 
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+
 import TicketCard from "./TicketCard";
 import TeamCard from "./TeamCard";
 
-import { Grid, withStyles, Modal, Button } from "@material-ui/core";
+import { Grid, withStyles, Modal, Button, IconButton } from "@material-ui/core";
 import MUIDataTable from "mui-datatables";
 
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
@@ -133,8 +135,8 @@ class Dashboard extends Component {
         }
 
         let teamsTicketData = [];
-        if (dashboard.tickets_overview.teams && dashboard.tickets_overview.teams.length > 0) {
-            teamsTicketData = dashboard.tickets_overview.teams.map(ticket => {
+        if (dashboard.tickets_overview.team && dashboard.tickets_overview.team.length > 0) {
+            teamsTicketData = dashboard.tickets_overview.team.map(ticket => {
                 return {
                     title: ticket.title,
                     current_status: ticket.current_status,
@@ -201,9 +203,20 @@ class Dashboard extends Component {
         return (
             <Grid container direction="column" justify="flex-start" alignItems="center" spacing={4} className={classes.w100}>
                 <Grid item sm={12}>
-                    <TeamCard
-                        teams={this.props.dashboard ? { assignedTeams: this.props.dashboard.teams, isLoading: this.props.teams_loading } : undefined}
-                    />
+                    <Grid container direction="row" justify="center" alignItems="center" spacing={4}>
+                        <Grid item>
+                            <Link to="/loginattempts" className={classes.noStyling}>
+                                <IconButton>
+                                    <AccountCircleIcon />
+                                </IconButton>
+                            </Link>
+                        </Grid>
+                        <Grid item>
+                            <TeamCard
+                                teams={this.props.dashboard ? { assignedTeams: this.props.dashboard.teams, isLoading: this.props.teams_loading } : undefined}
+                            />
+                        </Grid>
+                    </Grid>
                 </Grid>
                 <Grid item xs={10}>
                     <MuiThemeProvider theme={this.getTableTheme()}>

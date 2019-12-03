@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import moment from "moment";
 import { connect } from "react-redux";
 import {Chart} from 'react-google-charts';
-import { withStyles, Grid, Typography, Card, CardContent, Container, Select, MenuItem, InputLabel } from "@material-ui/core";
+import { withStyles, Grid, Card, CardContent, Select, MenuItem, InputLabel } from "@material-ui/core";
 import { getAverageResolve, getOpenTickets, getTicketHistory } from "../../actions/analyticsActions";
 
 const styles = theme=>({

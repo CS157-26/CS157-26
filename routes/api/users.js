@@ -114,7 +114,7 @@ router.post("/",
 // @desc    Get the names of the teams a user is in.
 // @params  user_id: The user_id of the user
 // @access  Public
-router.get("/teams", async (req, res) => {
+router.post("/teams", async (req, res) => {
     const { user_id } = req.body;
     if (user_id) {
         const query = `SELECT teams.* FROM users JOIN teammembers USING(user_id) JOIN teams USING(team_id) WHERE users.user_id=${user_id}`;

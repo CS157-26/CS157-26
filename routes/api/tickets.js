@@ -115,9 +115,11 @@ async function getTicketAssignees(ticket_id)
 const buildTicketFilter = (user_id, team_id, params) => {
     let condition = "";
     if (user_id) {
-        condition = `WHERE ticket.author_id = ${user_id}`;
-        if (params & params === "assigned") {
-            condition += `OR assignees.user_id = ${user_id}`;
+        if (params && params === "authored") {
+            condition = `WHERE ticket.author_id=${user_id}`;
+        }
+        if (params && params === "assigned") {
+            condition = `WHERE assignees.user_id=${user_id}`;
         }
     }
     if (team_id) {
@@ -131,8 +133,6 @@ const buildTicketFilter = (user_id, team_id, params) => {
     let filter = "";
     if (params && params === "assigned") {
         filter = "JOIN userassignment assignees ON assignees.ticket_id = ticket.ticket_id";
-    } else if (params && params === "authored") {
-        filter = "";
     }
 
     const query = `SELECT DISTINCT ticket.ticket_id, ticket.item_id, ticket.title, ticket.current_status,

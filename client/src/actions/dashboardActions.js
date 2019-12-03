@@ -1,6 +1,5 @@
 import axios from "axios";
 import { GET_ERRORS, GET_AUTHORED_TICKETS, GET_ASSIGNED_TICKETS, GET_TEAM_TICKETS, GET_ALL_TICKETS, TICKET_OVERVIEW_LOADING, TICKET_DETAILS_LOADING, GET_TICKET_DETAILS, CLEAR_TICKETS, CLEAR_DETAILS, GET_TEAMS, TEAMS_LOADING } from "./types";
-import { BottomNavigationAction } from "@material-ui/core";
 
 export const getAuthoredTickets = (userId) => dispatch => {
   dispatch({type: TICKET_OVERVIEW_LOADING});
@@ -36,9 +35,9 @@ export const getAssignedTickets = (userId) => dispatch => {
     })
 }
 
-export const getTeamTickets = (userId, teamId) => dispatch => {
+export const getTeamTickets = (teamId) => dispatch => {
   dispatch({ type: TICKET_OVERVIEW_LOADING });
-  axios.post("/api/tickets/overview", {user_id: userId, team_id: teamId})
+  axios.post("/api/tickets/overview", {team_id: teamId})
     .then(res => {
       dispatch({
         type: GET_TEAM_TICKETS,

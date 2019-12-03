@@ -65,7 +65,7 @@ export default function Comment(props) {
     const [currentStatus, setCurrentStatus] = React.useState("");
     const [priority, setPriority] = React.useState(0);
     const [protectedStatus, setProtectedStatus] = React.useState(false);
-    const [assignee, setAssignee] = React.useState(0);
+    const [assignee, setAssignee] = React.useState(undefined);
     const [availUsers, setAvailUsers] = React.useState([]);
 
     const setTicketData = data => {
@@ -115,6 +115,7 @@ export default function Comment(props) {
 
     const handleSubmit = event => {
         event.preventDefault();
+
         const commentData = {
             ticket_id: ticket_id,
             author_id: user_id,
@@ -122,8 +123,9 @@ export default function Comment(props) {
             current_status: currentStatus,
             priority: priority,
             protected_status: protectedStatus,
-            assignee: assignee.user_id,
+            assignee: isNaN(assignee) ? undefined : assignee,
         }
+        
         axios.post("api/tickets/comments/create", commentData)
             .then(res => {
             })
