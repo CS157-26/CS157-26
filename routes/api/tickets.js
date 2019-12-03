@@ -126,7 +126,7 @@ const buildTicketFilter = (user_id, team_id, params) => {
     }
 
     if (!user_id && !team_id) {
-        condition = `ticket.protected_status = 0`;
+        condition = `WHERE ticket.protected_status = 0`;
     }
 
     let filter = "";
