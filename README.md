@@ -5,6 +5,9 @@
 * Antoine Ngu
 * Dale Christian Seen
 
+## Final Project Report (Google Docs)
+* [Link](https://docs.google.com/document/d/1l50UVC732Qwnta61221XXynaxlhB2qlF_-z8jGODBCg/edit)
+
 ## Project Proposal Document (Google Docs)
 * [Link](https://docs.google.com/document/d/1IcwN95EiWhgI9mjhy-N-dl5jltKNnzZ_7_KFy-NgPNA/edit)
 
